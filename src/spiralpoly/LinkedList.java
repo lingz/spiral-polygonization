@@ -203,6 +203,8 @@ public class LinkedList
 
 	public LinkedList concatenate(LinkedList secondList) {
 		tail.previous.next = secondList.header.next;
+		secondList.header.next.previous = tail.previous;
+		tail.previous = secondList.tail.previous;
 		return this;
 	}
 	
