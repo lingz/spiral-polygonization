@@ -2,151 +2,85 @@ package spiralpoly;
 public class Graham {
 
 	public static LinkedList graham(LinkedList SortedList) {
-		
-		//Get first node
-		ListNode firstNode = SortedList.header.next;
-		//Get last node
-		ListNode lastNode = firstNode;
-		while (lastNode.next.element != null){
-			lastNode = lastNode.next;
-		}
-		//Find angle of line from new origin to Xmax with the new x-axis
-		//Make Xmax relative to Xmin - and find angle from the relative coordinate of Xmax
-		double angle = Math.atan((lastNode.element[1]-firstNode.element[1]) / (lastNode.element[0]-firstNode.element[0]));
-		
-		double newXorigin = firstNode.element[0];
-		double newYorigin = firstNode.element[1];
-		
-		//Transform coordinates
-		ListNode currentShift = firstNode;
-		double newAngle;
-		double radius;
 
-		while (currentShift.element != null){
-			currentShift.element[0] += (-1.0)*newXorigin;
-			currentShift.element[1] += (-1.0)*newYorigin;
-			if (currentShift.element[0] == 0){
-				newAngle = 0 - angle;
-			}
-			else{
-			newAngle = Math.atan(currentShift.element[1]/currentShift.element[0]) - angle;
-			}
-			radius = Math.sqrt( Math.pow(currentShift.element[0],2) + Math.pow(currentShift.element[1],2) );
-			currentShift.element[0] = radius*Math.cos(newAngle);
-			currentShift.element[1] = radius*Math.sin(newAngle);
-			currentShift = currentShift.next;
-		}
-		
-		//Declare convexHull for the output
-		LinkedList convexHull;
-		
 		// Separate the points to for upper convex hull and lower convex hull
 		LinkedList upper = new LinkedList();
 		LinkedList lower = new LinkedList();
-		
-		// get the y position of Xmin to be the separate line
-		ListNode currentNode = SortedList.header.next;
-		double separateLine = currentNode.element[1];
-		
-		while (currentNode.element != null){
-			// Put the beginning point in both lists
-			if (currentNode == SortedList.header.next){
-				upper.append(currentNode);
-				lower.append(currentNode);
+
+		//Get first and last node
+		ListNode firstNode = SortedList.header.next;
+		ListNode currentNode = firstNode;
+
+		while (currentNode.next.element != null){
+			currentNode = currentNode.next;
+		}
+		ListNode lastNode = currentNode;
+		currentNode = firstNode.next;
+
+		upper.append2(firstNode);
+		lower.append2(firstNode);
+
+		while (currentNode.next.element != null){
+			if (ccw(firstNode, lastNode, currentNode) <= 0){
+				lower.append2(currentNode);
 			}
-			// Put the last point in both lists
-			else if (currentNode.next.element == null){
-				upper.append(currentNode);
-				lower.append(currentNode);
-			}
-			// Separate the points for upper and lower list
-			else if (currentNode.element[1] >= separateLine){
-				upper.append(currentNode);
-			}
-			else if (currentNode.element[1] < separateLine) {
-				lower.append(currentNode);
+			else{
+				upper.append2(currentNode);
 			}
 			currentNode = currentNode.next;
 		}
+		upper.append2(lastNode);
+		lower.append2(lastNode);
+		//Declare convexHull for the output
+		LinkedList convexHull;
+
 		// Make each convex hull
-		LinkedList upperHull = findHull(upper,1);
-		LinkedList lowerHull = findHull(lower,-1);
-		
-		//Transform Hulls back
-		ListNode currentShiftBack = upperHull.header.next;
-		while (currentShiftBack.element != null){
-			if (currentShift.element[0] == 0){
-				newAngle = angle;
-			}
-			else{
-			newAngle = Math.atan(currentShift.element[1]/currentShift.element[0]) + angle;
-			}
-			radius = Math.sqrt( Math.pow(currentShiftBack.element[0],2) + Math.pow(currentShiftBack.element[1],2) );
-			currentShiftBack.element[0] = radius*Math.cos(newAngle);
-			currentShiftBack.element[1] = radius*Math.sin(newAngle);
-			currentShiftBack.element[0] += newXorigin;
-			currentShiftBack.element[1] += newYorigin;
-			currentShiftBack = currentShiftBack.next;
-		}
-		
-		currentShiftBack = lowerHull.header.next;
-		while (currentShiftBack.element != null){
-			if (currentShift.element[0] == 0){
-				newAngle = angle;
-			}
-			else{
-			newAngle = Math.atan(currentShift.element[1]/currentShift.element[0]) + angle;
-			}
-			radius = Math.sqrt( Math.pow(currentShiftBack.element[0],2) + Math.pow(currentShiftBack.element[1],2) );
-			currentShiftBack.element[0] = radius*Math.cos(newAngle);
-			currentShiftBack.element[1] = radius*Math.sin(newAngle);
-			currentShiftBack.element[0] += newXorigin;
-			currentShiftBack.element[1] += newYorigin;
-			currentShiftBack = currentShiftBack.next;
-		}
-		
+		LinkedList lowerHull = findHull(lower,1);
+		LinkedList upperHull = findHull(upper,-1);
+
+		upperHull.pop();
 		//Remove the same beginning and end of the lower hull
+		lowerHull.reverse_2();
 		lowerHull.pop();
-		lowerHull.reverse();
-		lowerHull.pop();
-		
 		// Combine the two hulls
 		convexHull = upperHull;
 		convexHull.concatenate(lowerHull);
 		return convexHull;
 	}
-	
 	public static LinkedList findHull(LinkedList setOfPoints, Integer direction){
-		
 		LinkedList hull = new LinkedList();
-		
 		//Put first two points in the hull
 		ListNode pointConsidered = setOfPoints.header.next;
-		hull.append(pointConsidered);
+		hull.append2(pointConsidered);
 		ListNode pointSecondLast = pointConsidered;
-		
 		pointConsidered = pointConsidered.next;
-		hull.append(pointConsidered);
+		hull.append2(pointConsidered);
 		ListNode pointLast = pointConsidered;
-		
+		pointConsidered = pointConsidered.next;
+
 		//Graham scan
 		while (pointConsidered.element != null){
+
 			// if the last two points in the hull and the point to be considered form convex, 
 			// accept the point and keep scanning
+
 			if (direction*ccw(pointSecondLast, pointLast, pointConsidered) >= 0){
-				hull.append(pointConsidered);
+				hull.append2(pointConsidered);
 				pointSecondLast = pointLast;
 				pointLast = pointConsidered;
 				pointConsidered = pointConsidered.next;
+
 			}
 			// if not remove the last point added
 			else{
 				hull.pop();
-			}	
+				pointLast = hull.tail.previous;
+				pointSecondLast = pointLast.previous;
+			}
 		}
 		return hull;
-		}
-	
+	}
+
 	public static double ccw(ListNode P1, ListNode P2, ListNode P3){
 		//Three points are a counter-clockwise turn if ccw > 0, clockwise if
 		//ccw < 0, and collinear if ccw = 0
@@ -155,5 +89,64 @@ public class Graham {
 		product2 = (P2.element[1] - P1.element[1])*(P3.element[0] - P1.element[0]);
 		return (product1 - product2); 
 	}
-	
+
+	public static void main(String[] args){
+		//unsortedList is the input LinkedList
+		LinkedList data = new LinkedList();
+		LinkedListItr p = data.zeroth();
+		/*
+		double[] x={ 0 , 5.0 };
+		data.insert(x,p);
+		p.advance();
+		double[] a={ 5.0 , 10 };
+		data.insert(a,p);
+		p.advance();
+		double[] b={ 10 , 5 };
+		data.insert(b,p);
+		p.advance();
+		double[] c={ 5 , 0 };
+		data.insert(c,p);
+		p.advance();
+		double[] d={ 2.591231629 , 0.6184665998 };
+		data.insert(d,p);
+		p.advance();
+		double[] e={ 7.679133975 , 0.7783603725 };
+		data.insert(e,p);
+		p.advance();
+		double[] f={ 7.679133975 , 9.221639628 };
+		data.insert(f,p);
+		p.advance();
+		double[] g={ 2.591231629 , 9.3815334 };
+		data.insert(g,p);
+		p.advance();
+		 */
+
+		double[] e={ 6 , 5 };
+		data.insert(e,p);
+		p.advance();
+		double[] d={ 5 , 4 };
+		data.insert(d,p);
+		p.advance();
+		double[] c={ 4 , 6 };
+		data.insert(c,p);
+		p.advance();
+		double[] b={ 3, 8 };
+		data.insert(b,p);
+		p.advance();
+		double[] a={ 2 , 5 };
+		data.insert(a,p);
+		p.advance();
+		double[] x={ 1 , 1 };
+		data.insert(x,p);
+		p.advance();
+
+
+		//Test
+		System.out.println("Given sorted points (X-ascending, Y-ascending): ");
+		LinkedList.printList(data);	
+		LinkedList convexResult = graham(data);
+		System.out.println();
+		System.out.println("Convex Hull: ");
+		LinkedList.printList(convexResult);
+	}
 }

@@ -63,7 +63,7 @@ public class LinkedList
 		return new LinkedListItr( header );
 	}
 
-	/**
+	/*
 	 * Return an iterator representing the first node in the list.
 	 * This operation is valid for empty lists.
 	 */
@@ -85,8 +85,8 @@ public class LinkedList
 	{
 		if( p != null && p.current != null ) {
 			ListNode nextNode = p.current.next;
-			p.current.next = new ListNode( (double[]) x, p.current.next, p.current );
-			nextNode.previous = p.current;
+			p.current.next = new ListNode( (double[]) x, nextNode, p.current );
+			nextNode.previous = p.current.next;
 		}
 	}
 
@@ -139,11 +139,36 @@ public class LinkedList
 		last.next = node;
 		node.next = tail;
 		node.previous = last;
+		tail.previous = node;
+	}
+	
+	public void append2(ListNode node) {
+		append(new ListNode(node.element));
+/*		if (node.element != null){
+			double[] newElement={0,0};
+			newNode.element = newElement;
+			newNode.element[0] = node.element[0];
+			newNode.element[1] = node.element[1];}
+		else{
+			newNode.element = node.element;
+		}
+
+		newNode.next	= node.next;
+		newNode.previous = node.previous;
+		ListNode last = tail.previous;
+		last.next = newNode;
+		newNode.next = tail;
+		newNode.previous = last;
+		tail.previous = newNode;*/
 	}
 	
 	// Pop method
 	public ListNode pop() {
 		ListNode oldLast = tail.previous;
+		System.out.println("popping");
+		System.out.println(String.valueOf(oldLast.element[0]));
+		System.out.println(String.valueOf(oldLast.previous.element[0]));
+		System.out.println(String.valueOf(oldLast.previous.previous.element[0]));
 		oldLast.previous.next = tail;
 		tail.previous = oldLast.previous;
 		return oldLast;
@@ -180,6 +205,31 @@ public class LinkedList
 		tail.previous.next = secondList.header.next;
 		return this;
 	}
+	
+	public LinkedList reverse_2() {
+
+		ListNode backNode = tail.previous;
+		ListNode frontNode = header.next;
+
+		while (frontNode != backNode){
+
+			double[] newElement;
+			newElement = backNode.element;
+			backNode.element = frontNode.element;
+			frontNode.element = newElement;
+
+			if (frontNode.next == backNode){
+				break;
+			}
+
+			backNode = backNode.previous;
+			frontNode = frontNode.next;	
+
+		}
+
+		return this;
+	}
+	
 	// Simple print method
 	public static void printList( LinkedList theList )
 	{
@@ -194,6 +244,22 @@ public class LinkedList
 
 		System.out.println( );
 	}
+	
+	//Modified version of print method. Returns string
+	public static String returnString( LinkedList theList )
+	{	String string1 = "";
+
+	if( theList.isEmpty( ) )
+		string1 = string1.concat("Empty list" );
+	else
+	{
+		LinkedListItr itr = theList.first( );
+		for( ; !itr.isPastEnd( ); itr.advance( ) )
+			string1 = string1.concat("(" + itr.retrieve( )[0] + ","+ itr.retrieve( )[1]+")" + " " );
+	}
+	return string1;
+	}
+
 	
 	
 	 ListNode header;

@@ -25,18 +25,18 @@ public class BucketSort{
         }
     
         LinkedList sorted = new LinkedList();
-        elt=sorted.zeroth();
         
-        for(int i=0; i<bucket.length; i++){
+        for(int i=0; i < bucket.length; i++){
         	//assuming a normal arrangement of points, where not more than 2 points have the same 
         	// x or y axes individually
         	
-        	for(int j=0; j<bucket[i];j++){
-        		double[] node = getNode(convertfromInt(i),unsortedList);
-        		sorted.insert(node,elt);
-        		elt.advance();
+        	for(int j=0; j < bucket[i];j++){
+        		double[] nodeElement = getNode(convertfromInt(i), unsortedList);
+        		ListNode node = new ListNode(nodeElement);
+        		sorted.append(node);
         	}
         }
+        //sorted.printList(sorted);
         LinkedList finalList = new LinkedList();
         finalList = sortY(sorted);
         return finalList;
@@ -99,7 +99,7 @@ public class BucketSort{
     
     public static double findMax(LinkedList val) {
  	   LinkedListItr Node = val.first();
- 	   double max=Node.retrieve()[0];
+ 	   double max = Node.retrieve()[0];
  	   while(Node.current.next!=null){
  		   if(Node.retrieve()[0]>max) max=Node.retrieve()[0];
  		   Node.advance();
