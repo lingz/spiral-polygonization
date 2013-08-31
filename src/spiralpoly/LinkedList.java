@@ -165,10 +165,6 @@ public class LinkedList
 	// Pop method
 	public ListNode pop() {
 		ListNode oldLast = tail.previous;
-		System.out.println("popping");
-		System.out.println(String.valueOf(oldLast.element[0]));
-		System.out.println(String.valueOf(oldLast.previous.element[0]));
-		System.out.println(String.valueOf(oldLast.previous.previous.element[0]));
 		oldLast.previous.next = tail;
 		tail.previous = oldLast.previous;
 		return oldLast;

@@ -12,21 +12,8 @@ public class S1 {
 		LinkedList remaining = BucketSort.sort(input);
 				
 		// special first case
-		System.out.println("starting");
-		LinkedList.printList(remaining);
-		System.out.println("tail remaining");
-		System.out.println(remaining.tail.previous.element[0]);
 		LinkedList hull = Graham.graham(remaining);
-		System.out.println("tail");
-		System.out.println(hull.tail.previous.element[0]);
-		System.out.println("starting2");
-		hull.printList(hull);
-		System.out.println("tail");
-		System.out.println(hull.tail.previous.element[0]);
 		hull.top();
-		System.out.println("tail");
-		System.out.println(hull.tail.previous.element[0]);
-		hull.printList(hull);
 		hull.pop();
 		//hull.printList(hull);
 		
@@ -46,7 +33,7 @@ public class S1 {
 			}
 			//prep for the next shell of the hull 
 			isConvex = !isConvex;
-			remaining.printList(remaining);
+			LinkedList.printList(remaining);
 			hull = Graham.findHull(remaining, 1);
 			
 			if (isConvex) {
