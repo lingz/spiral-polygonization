@@ -2,6 +2,10 @@ package spiralpoly;
 public class Graham {
 
 	public static LinkedList graham(LinkedList SortedList) {
+		// return straight away if there is only one element in the list
+		if (SortedList.header.next.next == SortedList.tail) {
+			return SortedList;
+		}
 
 		// Separate the points to for upper convex hull and lower convex hull
 		LinkedList upper = new LinkedList();

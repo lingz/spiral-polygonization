@@ -164,10 +164,13 @@ public class LinkedList
 	
 	// Pop method
 	public ListNode pop() {
-		ListNode oldLast = tail.previous;
-		oldLast.previous.next = tail;
-		tail.previous = oldLast.previous;
-		return oldLast;
+		if (tail.previous != header) {
+			ListNode oldLast = tail.previous;
+			oldLast.previous.next = tail;
+			tail.previous = oldLast.previous;
+			return oldLast;
+		}
+		return null;
 	}
 	
 	public ListNode top() {
@@ -201,7 +204,29 @@ public class LinkedList
 		tail.previous.next = secondList.header.next;
 		secondList.header.next.previous = tail.previous;
 		tail.previous = secondList.tail.previous;
+		secondList.tail.previous.next = tail;
 		return this;
+	}
+	
+	public LinkedList newConcatenate(LinkedList secondList) {
+		return concatenate(secondList.clone());
+	}
+	
+	public LinkedList clone() {
+		LinkedList clone = new LinkedList();
+		LinkedListItr oldList = this.first();
+		ListNode latest = new ListNode(oldList.retrieve(), null, clone.header);
+		clone.header.next = latest;
+		LinkedListItr newList = new LinkedListItr(clone.header.next);
+		while (oldList.hasNext()) {
+			oldList.advance();
+			latest = new ListNode(oldList.retrieve(), null, newList.current);
+			newList.current.next = latest;
+			newList.advance();
+		}
+		clone.tail.previous = newList.current;
+		newList.current.next = clone.tail;
+		return clone;
 	}
 	
 	public LinkedList reverse_2() {
@@ -257,10 +282,39 @@ public class LinkedList
 	}
 	return string1;
 	}
-
 	
+	public static void main(String[] args){
+    	LinkedList data = new LinkedList();
+    	LinkedListItr p = data.zeroth();
+    	
+    	double[] x={0.2313,0.281};
+    	data.insert(x,p);
+    	p.advance();
+    	double[] y={0.4214,0.291};
+    	data.insert(y,p);
+    	p.advance();
+    	double[] a={0.4214,0.191};
+    	data.insert(a,p);
+    	p.advance();
+    	double[] z={0.2315,0.261};
+    	data.insert(z,p);
+    	p.advance();
+    	double[] w={0.8312,0.231};
+    	data.insert(w,p);
+    	p.advance();
+    	double[] v={0.9913,0.786};
+    	data.insert(v,p);
+    	p.advance();
+    	// dummy data
+    	
+    	
+    	LinkedList.printList(data);
+    	LinkedList.printList(data.clone());
+		
+	}
 	
 	 ListNode header;
 	 ListNode tail;
 
 }
+
