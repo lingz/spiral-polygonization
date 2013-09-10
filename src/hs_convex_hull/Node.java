@@ -42,7 +42,7 @@ class Node {
 				this.hull = null;
 			}
 			
-			//Remove the points from the u and w which are stored in v
+			//Remove the points from u and w which are stored in v
 			if (lSplice == null) 
 				u.hull = null;
 			else
