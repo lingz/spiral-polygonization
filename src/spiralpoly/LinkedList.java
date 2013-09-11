@@ -34,6 +34,7 @@ public class LinkedList
 	{
 		header = new ListNode(null);
 		tail = new ListNode(null, null, header);
+		length = 0;
 		header.next = tail;
 	}
 
@@ -87,6 +88,7 @@ public class LinkedList
 			ListNode nextNode = p.current.next;
 			p.current.next = new ListNode( (double[]) x, nextNode, p.current );
 			nextNode.previous = p.current.next;
+			length += 1;
 		}
 	}
 
@@ -130,8 +132,11 @@ public class LinkedList
 	{
 		LinkedListItr p = findPrevious( x );
 
-		if( p.current.next != null )
+		if( p.current.next != null ) {
 			p.current.next = p.current.next.next;  // Bypass deleted node
+			length -= 1;
+			
+		}
 	}
 	// Append method
 	public void append(ListNode node) {
@@ -140,6 +145,7 @@ public class LinkedList
 		node.next = tail;
 		node.previous = last;
 		tail.previous = node;
+		length += 1;
 	}
 	
 	public void append2(ListNode node) {
@@ -168,6 +174,7 @@ public class LinkedList
 			ListNode oldLast = tail.previous;
 			oldLast.previous.next = tail;
 			tail.previous = oldLast.previous;
+			length -= 1;
 			return oldLast;
 		}
 		return null;
@@ -177,11 +184,16 @@ public class LinkedList
 		ListNode oldFirst = header.next;
 		header.next = oldFirst.next;
 		oldFirst.next.previous = header;
+		length -= 1;
 		return oldFirst;
 	}
 	
 	// Reverse method
 	public LinkedList reverse() {
+		// return if the set is empty or has only one point
+		if (tail.previous == header || tail.previous.previous == header) {
+			return this;
+		}
 		LinkedListItr tailItr = new LinkedListItr(tail.previous);
 		ListNode currentElement;
 		ListNode previousElement;
@@ -205,6 +217,7 @@ public class LinkedList
 		secondList.header.next.previous = tail.previous;
 		tail.previous = secondList.tail.previous;
 		secondList.tail.previous.next = tail;
+		length += secondList.length;
 		return this;
 	}
 	
@@ -226,6 +239,7 @@ public class LinkedList
 		}
 		clone.tail.previous = newList.current;
 		newList.current.next = clone.tail;
+		clone.length = this.length;
 		return clone;
 	}
 	
@@ -315,6 +329,7 @@ public class LinkedList
 	
 	 ListNode header;
 	 ListNode tail;
+	 int length;
 
 }
 

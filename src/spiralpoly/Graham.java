@@ -9,6 +9,7 @@ public class Graham {
 
 		// Separate the points to for upper convex hull and lower convex hull
 		LinkedList upper = new LinkedList();
+		System.out.println(upper.length);
 		LinkedList lower = new LinkedList();
 
 		//Get first and last node
@@ -22,6 +23,7 @@ public class Graham {
 		currentNode = firstNode.next;
 
 		upper.append2(firstNode);
+		System.out.println(upper.length);
 		lower.append2(firstNode);
 
 		while (currentNode.next.element != null){
@@ -30,10 +32,12 @@ public class Graham {
 			}
 			else{
 				upper.append2(currentNode);
+				System.out.println(upper.length);
 			}
 			currentNode = currentNode.next;
 		}
 		upper.append2(lastNode);
+		System.out.println(upper.length);
 		lower.append2(lastNode);
 		//Declare convexHull for the output
 		LinkedList convexHull;
@@ -41,6 +45,7 @@ public class Graham {
 		// Make each convex hull
 		LinkedList lowerHull = findHull(lower,1);
 		LinkedList upperHull = findHull(upper,-1);
+		System.out.println(upperHull.length);
 
 		upperHull.pop();
 		//Remove the same beginning and end of the lower hull
