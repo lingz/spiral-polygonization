@@ -35,7 +35,7 @@ package spiralpoly;
         }
         
         public boolean hasNext() {
-        	return current.next.next == null;
+        	return current.next.next != null;
         }
         
         public boolean hasPrevious() {

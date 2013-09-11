@@ -34,6 +34,7 @@ public class LinkedList
 	{
 		header = new ListNode(null);
 		tail = new ListNode(null, null, header);
+		length = 0;
 		header.next = tail;
 	}
 
@@ -87,6 +88,7 @@ public class LinkedList
 			ListNode nextNode = p.current.next;
 			p.current.next = new ListNode( (double[]) x, nextNode, p.current );
 			nextNode.previous = p.current.next;
+			length += 1;
 		}
 	}
 
@@ -130,8 +132,11 @@ public class LinkedList
 	{
 		LinkedListItr p = findPrevious( x );
 
-		if( p.current.next != null )
+		if( p.current.next != null ) {
 			p.current.next = p.current.next.next;  // Bypass deleted node
+			length -= 1;
+			
+		}
 	}
 	// Append method
 	public void append(ListNode node) {
@@ -140,6 +145,7 @@ public class LinkedList
 		node.next = tail;
 		node.previous = last;
 		tail.previous = node;
+		length += 1;
 	}
 	
 	public void append2(ListNode node) {
@@ -164,21 +170,30 @@ public class LinkedList
 	
 	// Pop method
 	public ListNode pop() {
-		ListNode oldLast = tail.previous;
-		oldLast.previous.next = tail;
-		tail.previous = oldLast.previous;
-		return oldLast;
+		if (tail.previous != header) {
+			ListNode oldLast = tail.previous;
+			oldLast.previous.next = tail;
+			tail.previous = oldLast.previous;
+			length -= 1;
+			return oldLast;
+		}
+		return null;
 	}
 	
 	public ListNode top() {
 		ListNode oldFirst = header.next;
 		header.next = oldFirst.next;
 		oldFirst.next.previous = header;
+		length -= 1;
 		return oldFirst;
 	}
 	
 	// Reverse method
 	public LinkedList reverse() {
+		// return if the set is empty or has only one point
+		if (tail.previous == header || tail.previous.previous == header) {
+			return this;
+		}
 		LinkedListItr tailItr = new LinkedListItr(tail.previous);
 		ListNode currentElement;
 		ListNode previousElement;
@@ -201,7 +216,31 @@ public class LinkedList
 		tail.previous.next = secondList.header.next;
 		secondList.header.next.previous = tail.previous;
 		tail.previous = secondList.tail.previous;
+		secondList.tail.previous.next = tail;
+		length += secondList.length;
 		return this;
+	}
+	
+	public LinkedList newConcatenate(LinkedList secondList) {
+		return concatenate(secondList.clone());
+	}
+	
+	public LinkedList clone() {
+		LinkedList clone = new LinkedList();
+		LinkedListItr oldList = this.first();
+		ListNode latest = new ListNode(oldList.retrieve(), null, clone.header);
+		clone.header.next = latest;
+		LinkedListItr newList = new LinkedListItr(clone.header.next);
+		while (oldList.hasNext()) {
+			oldList.advance();
+			latest = new ListNode(oldList.retrieve(), null, newList.current);
+			newList.current.next = latest;
+			newList.advance();
+		}
+		clone.tail.previous = newList.current;
+		newList.current.next = clone.tail;
+		clone.length = this.length;
+		return clone;
 	}
 	
 	public LinkedList reverse_2() {
@@ -257,10 +296,40 @@ public class LinkedList
 	}
 	return string1;
 	}
-
 	
+	public static void main(String[] args){
+    	LinkedList data = new LinkedList();
+    	LinkedListItr p = data.zeroth();
+    	
+    	double[] x={0.2313,0.281};
+    	data.insert(x,p);
+    	p.advance();
+    	double[] y={0.4214,0.291};
+    	data.insert(y,p);
+    	p.advance();
+    	double[] a={0.4214,0.191};
+    	data.insert(a,p);
+    	p.advance();
+    	double[] z={0.2315,0.261};
+    	data.insert(z,p);
+    	p.advance();
+    	double[] w={0.8312,0.231};
+    	data.insert(w,p);
+    	p.advance();
+    	double[] v={0.9913,0.786};
+    	data.insert(v,p);
+    	p.advance();
+    	// dummy data
+    	
+    	
+    	LinkedList.printList(data);
+    	LinkedList.printList(data.clone());
+		
+	}
 	
 	 ListNode header;
 	 ListNode tail;
+	 int length;
 
 }
+

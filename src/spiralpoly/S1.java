@@ -6,49 +6,128 @@ public class S1 {
 	public static LinkedList polygonize(LinkedList input) {
 		LinkedList convex = new LinkedList();
 		LinkedList concave = new LinkedList();
+		ListNode last = null;
+		ListNode secondLast;
 		boolean isConvex = true;
 		
 		// the linked list with all remaining Integers
 		LinkedList remaining = BucketSort.sort(input);
+		
+		System.out.println("Original:");
+		LinkedList.printList(remaining);
+		System.out.println(remaining.length);
 				
 		// special first case
 		LinkedList hull = Graham.graham(remaining);
+		System.out.println("First Shell:");
+		LinkedList.printList(hull);
+		System.out.println(hull.length);
+		System.out.println("convex");
+		convex.newConcatenate(hull);
+		LinkedList.printList(convex);
+		System.out.println(convex.length);
+		
 		hull.top();
 		hull.pop();
-		//hull.printList(hull);
 		
 		LinkedList to_remove = BucketSort.sort(hull);
 		
 		while (!to_remove.isEmpty()){
 			// subtract most of the hull from the set of remaining points
-			LinkedListItr remove_iterator = new LinkedListItr(to_remove.header);
-			LinkedListItr remaining_iterator = new LinkedListItr(to_remove.header);
-			LinkedListItr remove_trail = new LinkedListItr(to_remove.header);
-			while (remove_iterator.hasNext()){
-				remaining_iterator.advance();
-				if (remaining_iterator.current.element == remove_iterator.current.element){
-					remove_trail.current.next = remaining_iterator.current.next; // delete the node
+			System.out.println("to remove");
+			LinkedList.printList(to_remove);
+			LinkedListItr remove_iterator = to_remove.first();
+			LinkedListItr remaining_iterator = remaining.first();
+			while (!remove_iterator.isPastEnd()){
+				if (remaining_iterator.current.element[0] == remove_iterator.current.element[0]
+						&& remaining_iterator.current.element[1] == remove_iterator.current.element[1]){
+					remaining_iterator.current.previous.next = remaining_iterator.current.next; // delete the node
+					remaining_iterator.current.next.previous = remaining_iterator.current.previous; // doubly link
+					remaining.length -= 1;
 					remove_iterator.advance();
+				} else {
 				}
+				remaining_iterator.advance();
 			}
+			
 			//prep for the next shell of the hull 
 			isConvex = !isConvex;
-			LinkedList.printList(remaining);
-			hull = Graham.findHull(remaining, 1);
 			
-			if (isConvex) {
-				convex.concatenate(hull);
-			} else {
-				concave.concatenate(hull);
+			System.out.println("Remaining:");
+			LinkedList.printList(remaining);
+			System.out.println(remaining.length);
+			hull = Graham.graham(remaining);
+			
+			System.out.println("Next Shell:");
+			LinkedList.printList(hull);
+			System.out.println(hull.length);
+			
+			if (hull.length == remaining.length) {
+				if (isConvex) {
+					convex.newConcatenate(hull);
+				} else {
+					concave.newConcatenate(hull);
+				}
+				System.out.println("wrapping up");
+				break;
 			}
 			
-			hull.pop();
-			hull.pop();
 			
 			// remove everything except the last two points
-			to_remove = BucketSort.sort(hull);
+			secondLast = hull.pop();
+			// don't pop again if the hull only had one element this time.
+			if (hull.header.next != hull.tail) {
+				last = hull.pop();
+			}
+			System.out.println(hull.isEmpty());
+			
+			if (hull.isEmpty()) {
+				if (isConvex) {
+					convex.append2(secondLast);
+					if (last != null) {
+						convex.append2(last);
+					}
+				} else {
+					concave.append2(secondLast);
+					if (last != null) {
+						concave.append2(last);
+					}
+				}
+				System.out.println("wrapping up");
+				break;
+			}
+			
+			// merge copies of lists
+			if (isConvex) {
+				System.out.println("new convex");
+				convex.newConcatenate(hull);
+				LinkedList.printList(convex);
+				System.out.println(convex.length);
+			} else {
+				System.out.println("new concave");
+				concave.newConcatenate(hull);
+				LinkedList.printList(concave);
+				System.out.println(concave.length);
+			}
+			
+			if (hull.header.next != hull.tail) {
+				to_remove = BucketSort.sort(hull);
+			} else {
+				to_remove = hull;
+			}
+			
 		}
-		return convex.concatenate((concave.reverse()));
+		System.out.println("final convex");
+		LinkedList.printList(convex);
+		System.out.println(convex.length);
+		System.out.println("final concave");
+		LinkedList.printList(concave);
+		System.out.println(concave.length);
+		System.out.println("final concave reversed");
+		concave.reverse_2();
+		concave.top();
+		LinkedList.printList(concave);
+		return convex.concatenate((concave));
 	}
 	public static void main(String[] args) {
     	LinkedList data = new LinkedList();
@@ -75,8 +154,7 @@ public class S1 {
     	// dummy data
     	
     	LinkedList.printList(polygonize(data));
-		
-    	
+    	System.out.println("finished");
 	}
 
 }
