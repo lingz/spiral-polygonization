@@ -1,81 +1,64 @@
-package com.algorithms.serpentine;
+package hs_convex_hull;
 
 import java.util.NoSuchElementException;
 
-class ChainNode implements Cloneable{
-	Point element;
-	ChainNode next;
-	ChainNode previous;
-	ChainNode(Point p){
-		this.element = p;
-		this.previous = null;
-		this.next = null;
-	}
-	protected ChainNode clone() {
-		ChainNode node;
-		try {
-			node = (ChainNode) super.clone();
-			node.element = this.element;
-			node.next = this.next;
-			node.previous = this.previous;
-			return node;
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-}
-
-class ChainIterator{
+public class ChainIterator{
 	private ChainNode head;
-	private ChainNode current;
+	ChainNode current;
 	private ChainNode tail;
 
-	ChainIterator(Chain chain, ChainNode start){
+	public ChainIterator(Chain chain, ChainNode start){
 		this.head = chain.head;
 		this.tail = chain.tail;
 		this.current = start;
 	}
 
-	Point peekNext() {
+	public Point peekNext() {
 		if (!hasNext()) throw new NoSuchElementException("No next element");
 		else {
 			return current.next.element;
 		}
 	}
+	
+	public ChainNode peekNextNode() {
+		if (!hasNext()) throw new NoSuchElementException("No next element");
+		else {
+			return current.next;
+		}
+	}
 
-	Point peekPrevious() {
+	public Point peekPrevious() {
 		if (!hasPrevious()) throw new NoSuchElementException("No previous element");
 		else {
 			return current.previous.element;
 		}
 	}
 
-	Point next() {
+	public Point next() {
 		Point p = peekNext();
 		current = current.next;
 		return p;
 	}
 
-	Point previous() {
+	public Point previous() {
 		Point p = peekPrevious();
 		current = current.previous;
 		return p;
 	}
 
-	Point current(){
+	public Point current(){
 		return current.element;
 	}
 	
-	ChainNode currentNode(){
+	public ChainNode currentNode(){
 		return current;
 	}
 
-	boolean hasNext() {
+	public boolean hasNext() {
 		return (current != tail && current.next != null);
 	}
 
-	boolean hasPrevious() {
+	public boolean hasPrevious() {
 		return (current != head && current.previous != null);
 	}
 }

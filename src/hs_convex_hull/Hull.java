@@ -1,4 +1,4 @@
-package com.algorithms.serpentine;
+package hs_convex_hull;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -145,8 +145,8 @@ public class Hull {
 			int size = (int)Math.ceil(Math.random()*10000);
 			System.out.println();System.out.println("n: "+size);
 			PointDistribution ps = new PointDistribution(size);
-			Arrays.sort(ps.uniformPoints[0]);
-			Arrays.sort(ps.uniformPoints[1]);
+			Arrays.sort(ps.uniformPoints);
+			Arrays.sort(ps.uniformPoints);
 			Hull[] hull = {new Hull(ps.uniformPoints[0]), new Hull(ps.uniformPoints[1])};
 			for (int i = 0; i<2; i++){
 				if (i==0) {

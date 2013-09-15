@@ -3,10 +3,10 @@
 // of package DataStructures
 package spiralpoly;
 
-class ListNode
+public class ListNode
 {
 		// Constructors
-	ListNode( double[] theElement )
+	public ListNode( double[] theElement )
 	{
 		this( theElement, null, null );
 	}

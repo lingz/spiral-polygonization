@@ -1,4 +1,6 @@
-package com.algorithms.serpentine;
+package hs_convex_hull;
+
+import java.util.Arrays;
 
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.ContinuousUniformGenerator;
@@ -40,6 +42,8 @@ public class PointDistribution {
 			this.normalDS[i] = new DataSet(this.normalData[i]);
 			this.uniformPoints[i] = PointDistribution.convertToPoints(this.uniformData[i]);
 			this.normalPoints[i] = PointDistribution.convertToPoints(this.normalData[i]);
+			Arrays.sort(this.uniformPoints[i]);
+			Arrays.sort(this.normalPoints[i]);
 		}
 	}
 	
@@ -72,7 +76,7 @@ public class PointDistribution {
 	public static void printCoord(Point p, boolean inverse)
 	{
 		if (p == null) System.out.println("(null, null)");
-		else System.out.format("(%.2f, %.2f)%n", p.coord[0], (inverse ? 1-p.coord[1] : p.coord[1]));
+		else System.out.format("(%.2f, %.2f)%n", (inverse ? 1-p.coord[0] : p.coord[0]), (inverse ? 1-p.coord[1] : p.coord[1]));
 		return;
 	}
 

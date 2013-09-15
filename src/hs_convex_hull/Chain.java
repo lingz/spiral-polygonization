@@ -1,10 +1,10 @@
-package com.algorithms.serpentine;
+package hs_convex_hull;
 
-class Chain implements Cloneable{
-	ChainNode head;
-	ChainNode tail;
+public class Chain implements Cloneable{
+	public ChainNode head;
+	public ChainNode tail;
 
-	Chain(ChainNode n){
+	public Chain(ChainNode n){
 		this.head = n;
 		this.tail = n;
 	}
@@ -65,6 +65,19 @@ class Chain implements Cloneable{
 		} 
 	}
 
+	public Chain concatenate(Chain secondChain) {
+		tail.previous.next = secondChain.head.next;
+		secondChain.head.next.previous = tail.previous;
+		tail.previous = secondChain.tail.previous;
+		secondChain.tail.previous.next = tail;
+		return this;
+	}
+	
+	public boolean isEmpty( )
+	{
+		return head.next == tail;
+	}
+	
 	protected Chain clone() {
 		try {
 			Chain chain;

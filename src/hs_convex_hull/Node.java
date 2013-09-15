@@ -1,4 +1,4 @@
-package com.algorithms.serpentine;
+package hs_convex_hull;
 
 /**
  * This class implements the nodes used in the interval tree, along with 
