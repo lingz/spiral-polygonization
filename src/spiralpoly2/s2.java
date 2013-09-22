@@ -12,14 +12,14 @@ import java.util.Arrays;
 import spiralpoly.LinkedList;
 import spiralpoly.ListNode;
 
-public class s2 {
+public class S2 {
 	
 	public static void main(String[] args) {
 		//int size = (int)Math.ceil(Math.random()*10000);
 		//System.out.println();System.out.println("n: "+size);
 		int size = 10;
 		PointDistribution ps = new PointDistribution(size);
-		LinkedList output = s2.polygonize(ps.uniformPoints[0]);
+		LinkedList output = S2.polygonize(ps.uniformPoints[0]);
 	}
 	
 	static Point[] invert(Point[] x) {
