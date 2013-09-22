@@ -16,11 +16,12 @@ import javax.swing.JPanel;
 
 class Surface extends JPanel {
 
-	ArrayList<double[]> points, debug;
+	ArrayList<ArrayList<double[]>> points;
+	ArrayList<double []> debug;
 	int stroke, mult, radius;
 	boolean disp;
 
-	public Surface (ArrayList<double[]> x, ArrayList<double[]> y, 
+	public Surface (ArrayList<ArrayList<double[]>> x, ArrayList<double[]> y, 
 			int sizeOfTheBrush, boolean displayCoordinates) {
 		points = x;
 		debug = y;
@@ -31,7 +32,7 @@ class Surface extends JPanel {
 
 	private void doDrawing(Graphics g) {
 
-		int color, num = points.size() - 1;
+		int color, num;
 		double cordx, cordy, cordx2 = 0, cordy2 = 0;
 		
 		Graphics2D g2d = (Graphics2D) g;
@@ -59,41 +60,43 @@ class Surface extends JPanel {
 			cordx = getCoord(k,0,true);
 			cordy = getCoord(k,1,true);
 			g2d.setColor(new Color(0, 200, 0));
-			System.out.print(cordx);
 			drawPoint(cordx, cordy, g2d);
 		}
 
-		//draw first point
-		if (points.size() > 0) {
-			g2d.setColor(new Color(0, 200, 0));
-			cordx = getCoord(0,0);
-			cordy = getCoord(0,1);
-			drawPoint(cordx, cordy, g2d);
-		}
-
-		for (int k = 0; k < num; k++) {
-			cordx = getCoord(k,0);
-			cordy = getCoord(k,1);
-			cordx2 = getCoord(k+1,0);
-			cordy2 = getCoord(k+1,1);
-			color = (int) Math.round(points.get(k)[2]);
-			g2d.setColor(new Color(color, color, color));
-			drawLine(cordx, cordy, cordx2, cordy2, g2d);
-			if (k < 1) g2d.setColor(new Color(0, 0, 200));
-			else g2d.setColor(new Color(0, 0, 0));
-			drawPoint(cordx, cordy, g2d);          
-		}
-
-		//color last point
-		if (num > 0) {
-			g2d.setColor(new Color(200, 0, 0));
-			drawPoint(cordx2, cordy2, g2d);
+		for (int i = 0; i < points.size(); i++) {
+			num = points.get(i).size() - 1;
+			//draw first point
+			if (num >= 0) {
+				g2d.setColor(new Color(0, 0, 200));
+				cordx = getCoord(0,0,i);
+				cordy = getCoord(0,1,i);
+				drawPoint(cordx, cordy, g2d);
+			}
+	
+			for (int k = 0; k < num; k++) {
+				cordx = getCoord(k,0,i);
+				cordy = getCoord(k,1,i);
+				cordx2 = getCoord(k+1,0,i);
+				cordy2 = getCoord(k+1,1,i);
+				color = (int) Math.round(points.get(i).get(k)[2]);
+				g2d.setColor(new Color(color, color, color));
+				drawLine(cordx, cordy, cordx2, cordy2, g2d);
+				if (k < 1) g2d.setColor(new Color(0, 0, 200));
+				else g2d.setColor(new Color(0, 0, 0));
+				drawPoint(cordx, cordy, g2d);          
+			}
+	
+			//color last point
+			if (num > 0) {
+				g2d.setColor(new Color(200, 0, 0));
+				drawPoint(cordx2, cordy2, g2d);
+			}	
 		}
 	}
 
-	private double getCoord(int index, int coord) {
-		if (coord == 0) return points.get(index)[0];
-		else return (1 - points.get(index)[1]);
+	private double getCoord(int index, int coord, int chain) {
+		if (coord == 0) return points.get(chain).get(index)[0];
+		else return (1 - points.get(chain).get(index)[1]);
 	}
 	
 	private double getCoord(int index, int coord, boolean ifDebug) {

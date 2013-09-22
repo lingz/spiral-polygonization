@@ -7,7 +7,8 @@ import javax.swing.SwingUtilities;
 
 public class Polygonization {
 
-    public ArrayList<double []> points, debug;
+    public ArrayList<double []> debug;
+    public ArrayList<ArrayList<double []>> points;
     int stroke;
 	static int DEFAULT_WIDTH = 4;
     boolean disp;
@@ -25,23 +26,34 @@ public class Polygonization {
     }
     
     public Polygonization(int sizeOfTheBrush, boolean displayCoordinates) {
-        points = new ArrayList<double[]>();
-        debug = new ArrayList<double[]>();
+        points = new ArrayList<>();
+        debug = new ArrayList<>();
         stroke = sizeOfTheBrush;
         disp = displayCoordinates;
+        this.show();
     }
 
     public void add(double x, double y) {
-        add(x,y,0);
+        add(x, y, 0, 0);
+    }
+    
+    public void add(double x, double y, int chain) {
+        add(x, y, chain, 0);
     }
     
     public void add(double x, double y, boolean notInTheHull) {
         if (notInTheHull) debug.add(new double[] {x,y,0});
-        else points.add(new double[] {x,y,0});
+        else points.get(0).add(new double[] {x,y,0});
     }
     
-    public void add(double x, double y, int GrayscaleColor) {
-        points.add(new double[] {x,y, GrayscaleColor});
+    public void add(double x, double y, int chain, int GrayscaleColor) {
+        if (chain < points.size())
+        	points.get(chain).add(new double[] {x,y, GrayscaleColor});
+        else {
+        	ArrayList<double []> tmp = new ArrayList<> ();
+        	tmp.add(new double[] {x,y, GrayscaleColor});
+        	points.add(tmp);
+        }
     }
 
     public void show() {
@@ -61,12 +73,15 @@ public class Polygonization {
 
     public static void main(String[] args) {
         Polygonization img = new Polygonization(3);
-        img.add(0.001, 0.001, 200);
-        img.add(0.5, 0.7, 100);
-        img.add(0.999, 0.999, 200);
+        img.add(0.001, 0.001);
+        img.add(0.5, 0.7);
+        img.add(0.999, 0.999);
         img.add(0.729, 0.599, true);
         img.add(0.569, 0.499, true);
-        img.show();
+        img.add(0.2, 0.3, 1);
+        img.add(0.53, 0.87, 1);
+        img.add(0.67, 0.2, 2);
+        img.add(0.1, 0.34, 1);
     }
 
 }

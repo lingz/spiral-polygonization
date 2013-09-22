@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities;
 
 public class Display extends JFrame {
 
-    public Display(ArrayList<double[]> points, ArrayList<double[]> debug, 
+    public Display(ArrayList<ArrayList<double[]>> points, ArrayList<double[]> debug, 
     		int sizeOfTheBrush, boolean displayCoordinates) {
         setTitle("Spiral Polygonization");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
