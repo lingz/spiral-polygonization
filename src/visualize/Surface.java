@@ -108,8 +108,10 @@ class Surface extends JPanel {
 	private void drawPoint(double x, double y, Graphics2D g2d) {
 		double cx = x * mult;
 		double cy = y * mult; 
+		if (disp) {
 		g2d.drawString("[" + String.format("%1$,.2f", x) + "," + String.format("%1$,.2f", 1 - y) + "]",
 				Math.round(cx + radius), Math.round(cy));
+		}
 		g2d.fill(new Ellipse2D.Double(cx - radius/2, cy - radius/2, (double) radius, (double) radius));
 	}
 	
