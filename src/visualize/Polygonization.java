@@ -72,16 +72,16 @@ public class Polygonization {
 
 
     public static void main(String[] args) {
-        Polygonization img = new Polygonization(3);
-        img.add(0.001, 0.001);
-        img.add(0.5, 0.7);
-        img.add(0.999, 0.999);
-        img.add(0.729, 0.599, true);
-        img.add(0.569, 0.499, true);
-        img.add(0.2, 0.3, 1);
-        img.add(0.53, 0.87, 1);
-        img.add(0.67, 0.2, 2);
-        img.add(0.1, 0.34, 1);
+        Polygonization img = new Polygonization(3); //line width - 3, coordinates displayed by default
+        img.add(0.01, 0.01); //adds a point to chain 0
+        img.add(0.5, 0.7, 0); //adds a point to chain 0
+        img.add(0.999, 0.899, 0, 150); //adds a point to chain 0, segment that connects previous and this point is grey
+        img.add(0.729, 0.599, true); //adds a point that is not connected to other points (colored in grey)
+        img.add(0.569, 0.499, true); //adds a point that is not connected to other points (colored in grey)
+        img.add(0.2, 0.3, 1); //adds a point to chain 1
+        img.add(0.53, 0.87, 1, 200); //adds a point to chain 1, colors a link to very light grey
+        img.add(0.67, 0.2, 2); //adds a point to chain 2
+        img.add(0.1, 0.34, 1); //adds a point to chain 1
     }
 
 }
