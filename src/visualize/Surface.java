@@ -7,87 +7,116 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 class Surface extends JPanel {
-	
-	ArrayList<double[]> points;
-	ArrayList<double[]> debug;
-	
-	public Surface (ArrayList<double[]> x, ArrayList<double[]> y) {
+
+	ArrayList<double[]> points, debug;
+	int stroke, mult, radius;
+	boolean disp;
+
+	public Surface (ArrayList<double[]> x, ArrayList<double[]> y, 
+			int sizeOfTheBrush, boolean displayCoordinates) {
 		points = x;
 		debug = y;
+		stroke = sizeOfTheBrush;
+		disp = displayCoordinates;
+		radius = stroke * 2;
 	}
 
-    private void doDrawing(Graphics g) {
-    	
-    	int radius = 10;
-    	int num = points.size() - 1;
-    	int cordx, cordy;
+	private void doDrawing(Graphics g) {
 
-        Graphics2D g2d = (Graphics2D) g;
-        
-        Dimension size = getSize();
-        Insets insets = getInsets();
+		int color, num = points.size() - 1;
+		double cordx, cordy, cordx2 = 0, cordy2 = 0;
+		
+		Graphics2D g2d = (Graphics2D) g;
 
-        int w = size.width - insets.left - insets.right;
-        int h = size.height - insets.top - insets.bottom;
+		Dimension size = getSize();
+		Insets insets = getInsets();
 
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+		int w = size.width - insets.left - insets.right;
+		int h = size.height - insets.top - insets.bottom;
+		mult = Math.min(w,h);
 
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_QUALITY);
-        
-        BasicStroke bs = new BasicStroke(2, BasicStroke.CAP_ROUND,
-                BasicStroke.JOIN_ROUND);
-        
-        g2d.setStroke(bs);
-        
-        for (int k = 0; k < debug.size(); k++) {
-        	cordx = (int) Math.round(debug.get(k)[0] * Math.min(w,h));
-        	cordy = (int) Math.round((1 - debug.get(k)[1]) * Math.min(w,h));
-        	g2d.setColor(new Color(0, 200, 0));
-        	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);  
-        }
-        
-        GeneralPath polygon = new GeneralPath();
-        
-        g2d.setColor(new Color(0, 0, 0));
-        
-        for (int k = 0; k <= num; k++) {
-        	cordx = (int) Math.round(points.get(k)[0] * Math.min(w,h));
-        	cordy = (int) Math.round((1 - points.get(k)[1]) * Math.min(w,h));
-        	if (k < 1) polygon.moveTo(cordx, cordy);
-            else polygon.lineTo(cordx, cordy);
-        	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
-            
-        }
-        
-        polygon.closePath();
-        g2d.draw(polygon);
-        
-        //Color first and last points
-        cordx = (int) Math.round(points.get(0)[0] * Math.min(w,h));
-    	cordy = (int) Math.round((1 - points.get(0)[1]) * Math.min(w,h));
-    	g2d.setColor(new Color(0, 0, 200));
-    	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
-    	
-        cordx = (int) Math.round(points.get(num)[0] * Math.min(w,h));
-    	cordy = (int) Math.round((1 - points.get(num)[1]) * Math.min(w,h));
-    	g2d.setColor(new Color(200, 0, 0));
-    	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
-    	
-        
-    }
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 
-    @Override
-    public void paintComponent(Graphics g) {
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+				RenderingHints.VALUE_RENDER_QUALITY);
 
-        super.paintComponent(g);
-        doDrawing(g);
-    }
+		BasicStroke bs = new BasicStroke(stroke, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND);
+
+		g2d.setStroke(bs);
+		
+		//draw point that aren't in the hull
+		for (int k = 0; k < debug.size(); k++) {
+			cordx = getCoord(k,0,true);
+			cordy = getCoord(k,1,true);
+			g2d.setColor(new Color(0, 200, 0));
+			System.out.print(cordx);
+			drawPoint(cordx, cordy, g2d);
+		}
+
+		//draw first point
+		if (points.size() > 0) {
+			g2d.setColor(new Color(0, 200, 0));
+			cordx = getCoord(0,0);
+			cordy = getCoord(0,1);
+			drawPoint(cordx, cordy, g2d);
+		}
+
+		for (int k = 0; k < num; k++) {
+			cordx = getCoord(k,0);
+			cordy = getCoord(k,1);
+			cordx2 = getCoord(k+1,0);
+			cordy2 = getCoord(k+1,1);
+			color = (int) Math.round(points.get(k)[2]);
+			g2d.setColor(new Color(color, color, color));
+			drawLine(cordx, cordy, cordx2, cordy2, g2d);
+			if (k < 1) g2d.setColor(new Color(0, 0, 200));
+			else g2d.setColor(new Color(0, 0, 0));
+			drawPoint(cordx, cordy, g2d);          
+		}
+
+		//color last point
+		if (num > 0) {
+			g2d.setColor(new Color(200, 0, 0));
+			drawPoint(cordx2, cordy2, g2d);
+		}
+	}
+
+	private double getCoord(int index, int coord) {
+		if (coord == 0) return points.get(index)[0];
+		else return (1 - points.get(index)[1]);
+	}
+	
+	private double getCoord(int index, int coord, boolean ifDebug) {
+		if (coord == 0) return debug.get(index)[0];
+		else return (1 - debug.get(index)[1]);
+	}
+	
+	private void drawPoint(double x, double y, Graphics2D g2d) {
+		double cx = x * mult;
+		double cy = y * mult; 
+		g2d.drawString("[" + String.format("%1$,.2f", x) + "," + String.format("%1$,.2f", 1 - y) + "]",
+				Math.round(cx + radius), Math.round(cy));
+		g2d.fill(new Ellipse2D.Double(cx - radius/2, cy - radius/2, (double) radius, (double) radius));
+	}
+	
+	private void drawLine(double x1, double y1, double x2, double y2, Graphics2D g2d) {
+		g2d.draw(new Line2D.Double(x1 * mult, y1 * mult, x2 * mult, y2 * mult));
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+
+		super.paintComponent(g);
+		doDrawing(g);
+	}
 }
