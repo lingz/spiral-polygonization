@@ -1,12 +1,12 @@
 package visualize;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
-import java.awt.geom.Arc2D.Double;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
@@ -15,12 +15,18 @@ import javax.swing.JPanel;
 class Surface extends JPanel {
 	
 	ArrayList<double[]> points;
+	ArrayList<double[]> debug;
 	
-	public Surface (ArrayList x) {
+	public Surface (ArrayList<double[]> x, ArrayList<double[]> y) {
 		points = x;
+		debug = y;
 	}
 
     private void doDrawing(Graphics g) {
+    	
+    	int radius = 10;
+    	int num = points.size() - 1;
+    	int cordx, cordy;
 
         Graphics2D g2d = (Graphics2D) g;
         
@@ -41,19 +47,40 @@ class Surface extends JPanel {
         
         g2d.setStroke(bs);
         
+        for (int k = 0; k < debug.size(); k++) {
+        	cordx = (int) Math.round(debug.get(k)[0] * Math.min(w,h));
+        	cordy = (int) Math.round((1 - debug.get(k)[1]) * Math.min(w,h));
+        	g2d.setColor(new Color(0, 200, 0));
+        	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);  
+        }
+        
         GeneralPath polygon = new GeneralPath();
         
-        for (int k = 0; k < points.size(); k++) {
-        	int cordx = (int) Math.round(points.get(k)[0] * Math.min(w,h));
-        	int cordy = (int) Math.round((1 - points.get(k)[1]) * Math.min(w,h));
-        	int radius = 10;
-        	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
-            if (k < 1) polygon.moveTo(cordx, cordy);
+        g2d.setColor(new Color(0, 0, 0));
+        
+        for (int k = 0; k <= num; k++) {
+        	cordx = (int) Math.round(points.get(k)[0] * Math.min(w,h));
+        	cordy = (int) Math.round((1 - points.get(k)[1]) * Math.min(w,h));
+        	if (k < 1) polygon.moveTo(cordx, cordy);
             else polygon.lineTo(cordx, cordy);
+        	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
+            
         }
         
         polygon.closePath();
         g2d.draw(polygon);
+        
+        //Color first and last points
+        cordx = (int) Math.round(points.get(0)[0] * Math.min(w,h));
+    	cordy = (int) Math.round((1 - points.get(0)[1]) * Math.min(w,h));
+    	g2d.setColor(new Color(0, 0, 200));
+    	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
+    	
+        cordx = (int) Math.round(points.get(num)[0] * Math.min(w,h));
+    	cordy = (int) Math.round((1 - points.get(num)[1]) * Math.min(w,h));
+    	g2d.setColor(new Color(200, 0, 0));
+    	g2d.fillOval(cordx - radius/2, cordy - radius/2, radius, radius);
+    	
         
     }
 

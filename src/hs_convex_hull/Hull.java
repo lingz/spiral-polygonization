@@ -3,6 +3,8 @@ package hs_convex_hull;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import visualize.Polygonization;
+
 public class Hull {
 	private Node root;
 	public Point[] points;
@@ -33,6 +35,37 @@ public class Hull {
 				}
 			}
 		}
+	}
+	
+	public static void showHull(Chain c, Point[] rest, boolean inverse){
+		if (c==null || c.head == null || c.head.element == null){
+			System.out.println("Empty chain");
+		} else {
+			Polygonization img = new Polygonization();
+			ChainIterator iter = new ChainIterator(c, c.head);
+			double coord[] = new double[2];
+			coord = iter.current().coord;
+			if (inverse)
+				img.add(1-coord[0], 1-coord[1]);
+			else
+				img.add(coord[0],coord[1]);
+			while (iter.hasNext()){
+				coord = iter.next().coord;
+				if (inverse)
+					img.add(1-coord[0], 1-coord[1]);
+				else
+					img.add(coord[0],coord[1]);
+			}
+			for (int i = 0; i<rest.length; i++){
+				coord = rest[i].coord;
+				if (inverse)
+					img.add(1-coord[0], 1-coord[1], true);
+				else
+					img.add(coord[0],coord[1], true);
+			}
+			img.show();
+		}
+		return;
 	}
 
 	private void buildIntervalTree() {
@@ -141,13 +174,18 @@ public class Hull {
 	 */
 	public static void main(String[] args) {
 		int c = 0;
-		while (true){
-			int size = (int)Math.ceil(Math.random()*10000);
+		
+			//int size = (int)Math.ceil(Math.random()*100);
+			int size = 10;
 			System.out.println();System.out.println("n: "+size);
 			PointDistribution ps = new PointDistribution(size);
-			Arrays.sort(ps.uniformPoints);
-			Arrays.sort(ps.uniformPoints);
+			Arrays.sort(ps.uniformPoints[0]);
+			//Arrays.sort(ps.uniformPoints[1]);
 			Hull[] hull = {new Hull(ps.uniformPoints[0]), new Hull(ps.uniformPoints[1])};
+			Hull.printChainCoord(hull[0].inspect(), false);
+			Hull.showHull(hull[0].inspect(), hull[0].points, false);
+			System.out.println();
+			/*
 			for (int i = 0; i<2; i++){
 				if (i==0) {
 					//System.out.print("Upper ");
@@ -187,8 +225,8 @@ public class Hull {
 					}
 					//System.out.println();
 				}
-			}
+			}*/
 			System.out.println("case "+ (++c)+" done");
 		}
-	}
+	
 }
