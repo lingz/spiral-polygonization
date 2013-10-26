@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
+import spiralpoly.LinkedList;
+import spiralpoly.LinkedListItr;
+
 
 public class Polygonization {
 
@@ -55,6 +58,51 @@ public class Polygonization {
         	points.add(tmp);
         }
     }
+    
+    public void add(double[][] list) {
+    	add(list, 0, 0);
+    }
+    
+    public void add(double[][] list, int chain) {
+    	add(list, chain, 0);
+    }
+    
+    public void add(double[][] list, int chain, int GrayscaleColor) {
+    	for (int i = 0; i < list.length; i++) {
+            if (chain < points.size())
+            	points.get(chain).add(new double[] {list[i][0], list[i][1], GrayscaleColor});
+            else {
+            	ArrayList<double []> tmp = new ArrayList<> ();
+            	tmp.add(new double[] {list[i][0], list[i][1], GrayscaleColor});
+            	points.add(tmp);
+            }
+    	}
+    }
+    
+    public void add(LinkedList list) {
+        add(list, 0, 0);
+    }
+    
+    public void add(LinkedList list, int chain) {
+        add(list, chain, 0);
+    }
+    
+    public void add(LinkedList list, int chain, int GrayscaleColor) {
+    	if( ! list.isEmpty( ) ) {
+    		LinkedListItr itr = list.first( );
+    		for( ; !itr.isPastEnd( ); itr.advance( ) ) {
+    			double x = itr.retrieve( )[0]; 
+    			double y = itr.retrieve( )[1];
+	            if (chain < points.size())
+	            	points.get(chain).add(new double[] {x,y, GrayscaleColor});
+	            else {
+	            	ArrayList<double []> tmp = new ArrayList<> ();
+	            	tmp.add(new double[] {x,y, GrayscaleColor});
+	            	points.add(tmp);
+	            }
+    		}
+    	}
+    }
 
     public void show() {
 
@@ -82,6 +130,35 @@ public class Polygonization {
         img.add(0.53, 0.87, 1, 200); //adds a point to chain 1, colors a link to very light grey
         img.add(0.67, 0.2, 2); //adds a point to chain 2
         img.add(0.1, 0.34, 1); //adds a point to chain 1
+        
+        LinkedList data = new LinkedList();
+    	LinkedListItr p = data.zeroth();
+    	
+    	double[] x={0.2313,0.281};
+    	data.insert(x,p);
+    	p.advance();
+    	double[] y={0.4214,0.291};
+    	data.insert(y,p);
+    	p.advance();
+    	double[] a={0.4214,0.191};
+    	data.insert(a,p);
+    	p.advance();
+    	double[] z={0.2315,0.261};
+    	data.insert(z,p);
+    	p.advance();
+    	double[] w={0.8312,0.231};
+    	data.insert(w,p);
+    	p.advance();
+    	double[] v={0.9913,0.786};
+    	data.insert(v,p);
+    	p.advance();
+    	
+    	img.add(data, 3); //adds points from linked list to chain 3
+    	
+    	int scale = 10;
+    	img.add (new double[][] {{1.0/scale, 1.0/scale}, {2.0/scale,5.0/scale}, {3.0/scale,8.0/scale}, {6.0/scale,5.0/scale}, {5.0/scale,4.0/scale}}, 4, 160); // adds array of doubles to chain 4
+		
+        
     }
 
 }

@@ -41,7 +41,7 @@ public class Hull {
 		if (c==null || c.head == null || c.head.element == null){
 			System.out.println("Empty chain");
 		} else {
-			Polygonization img = new Polygonization(false);
+			Polygonization img = new Polygonization(2, false);
 			ChainIterator iter = new ChainIterator(c, c.head);
 			double coord[] = new double[2];
 			coord = iter.current().coord;
@@ -175,7 +175,7 @@ public class Hull {
 		int c = 0;
 		
 			//int size = (int)Math.ceil(Math.random()*100);
-			int size = 1000;
+			int size = 10000;
 			System.out.println();System.out.println("n: "+size);
 			PointDistribution ps = new PointDistribution(size);
 			Arrays.sort(ps.uniformPoints[0]);
