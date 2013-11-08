@@ -18,6 +18,8 @@ public class Hull {
 		return root.hull;
 	}
 
+
+
 	public static void printChainCoord(Chain c, boolean inverse){
 		double x = 0;
 		if (c==null || c.head == null || c.head.element == null){
@@ -36,12 +38,11 @@ public class Hull {
 			}
 		}
 	}
-	
-	public static void showHull(Chain c, Point[] rest, boolean inverse){
+
+	public static void showHull(Polygonization img, Chain c, Point[] rest, boolean inverse){
 		if (c==null || c.head == null || c.head.element == null){
 			System.out.println("Empty chain");
 		} else {
-			Polygonization img = new Polygonization(2, false);
 			ChainIterator iter = new ChainIterator(c, c.head);
 			double coord[] = new double[2];
 			coord = iter.current().coord;
@@ -68,14 +69,56 @@ public class Hull {
 	}
 
 	private void buildIntervalTree() {
+		int chainNumber = -1;
 		LinkedList<Node> queue = new LinkedList<>();
-		int size = (int) Math.pow(2, Math.ceil(Math.log(this.points.length)/Math.log(2)));
-		for (int i=0; i<this.points.length; i++)
+		double levels = Math.ceil(Math.log(this.points.length)/Math.log(2));
+		int size = (int) Math.pow(2, levels);
+		int nextIters = size;
+		int currentIter = -1;
+		int level = -1;
+		int brightness = (int) (255/(levels-1));
+		//System.out.println(nextIters);
+		//System.out.println(brightness);
+		for (int i=0; i<this.points.length; i++){
+			currentIter++;
 			queue.add(new Node(this.points[i]));
-		for (int i = this.points.length; i<size; i++)
+		}
+		for (int i = this.points.length; i<size; i++){
+			currentIter++;
 			queue.add(new Node(null));
+		}
 		while (queue.size()!=1){
-			queue.add(new Node(queue.poll(), queue.poll()));
+			Node nodel = queue.poll();
+			Node noder = queue.poll();
+			if (nodel.tan != null){
+				//System.out.println("tan[0] nodel: ");
+				//PointDistribution.printCoord(nodel.tan[0].element, false);
+				//System.out.println("tan[1] nodel: ");
+				//PointDistribution.printCoord(nodel.tan[1].element, false);
+			}
+			if (noder.tan != null){
+				//System.out.println("tan[0] noder: ");
+				//PointDistribution.printCoord(noder.tan[0].element, false);
+				//System.out.println("tan[1] noder: ");
+				//PointDistribution.printCoord(noder.tan[1].element, false);
+				//System.out.println("chainNumber: " + chainNumber);
+			}
+			Node node = new Node(nodel, noder);
+			queue.add(node);
+			currentIter++;
+			if(currentIter == nextIters){
+				nextIters /= 2;
+				currentIter = 0;
+				level++;
+			}
+			if (node.tan!=null) {
+				chainNumber++;
+				//PointDistribution.printCoord(node.tan[0].element, false);
+				//PointDistribution.printCoord(node.tan[1].element, false);
+				//System.out.println();
+				//img.add(node.tan[0].element.coord[0], node.tan[0].element.coord[1], chainNumber, brightness*level);
+				//img.add(node.tan[1].element.coord[0], node.tan[1].element.coord[1], chainNumber, brightness*level);
+			}
 		}
 		this.root = queue.poll();
 	}
@@ -107,7 +150,7 @@ public class Hull {
 		}
 		if (v.tan != null){
 			v.hull = null;
-			
+
 			Node recurse = (p.coord[0]<=u.hull.tail.element.coord[0] ? u : w);
 			if (recurse.hull.head == recurse.hull.tail && recurse.hull.head.element == p){
 				if (recurse == w){
@@ -122,24 +165,24 @@ public class Hull {
 					v.right = v.right.right;
 				}
 			} else {
-				
+
 				//FIX THIS FOR O() EFFICIENCY?
 				ChainNode[] pq;
 				if (p == v.tan[0].element){ 
-					
+
 				} else {
-					
+
 				}
 				if (p == v.tan[1].element){
-					
+
 				}else {
-					
+
 				}
-				
+
 				delete(p, recurse);
 				ChainNode[] tan = Node.tan(u.hull, w.hull);
-				
-				
+
+
 				ChainNode lSplice = tan[0].next;
 				ChainNode rSplice = tan[1].previous; 
 				try {
@@ -173,59 +216,38 @@ public class Hull {
 	 */
 	public static void main(String[] args) {
 		int c = 0;
-		
-			//int size = (int)Math.ceil(Math.random()*100);
-			int size = 10000;
-			System.out.println();System.out.println("n: "+size);
-			PointDistribution ps = new PointDistribution(size);
-			Arrays.sort(ps.uniformPoints[0]);
-			//Arrays.sort(ps.uniformPoints[1]);
-			Hull[] hull = {new Hull(ps.uniformPoints[0]), new Hull(ps.uniformPoints[1])};
-			Hull.printChainCoord(hull[0].inspect(), false);
-			Hull.showHull(hull[0].inspect(), hull[0].points, false);
-			System.out.println();
-			/*
+		int size = 16;
+		PointDistribution ps = new PointDistribution(size);
+		Hull[] hull = {new Hull(ps.normalPoints[0]), new Hull(ps.normalPoints[1])};
+		Polygonization img = new Polygonization(false);
+		Hull.showHull(img, hull[0].inspect(), hull[0].points, false);
+		Hull.showHull(img, hull[1].inspect(), hull[1].points, true);
+
+		System.out.println();
+
+		while (hull[0].points.length != 0){
+			int idx = Math.round((float)Math.random()*(hull[0].points.length-1));
+			
 			for (int i = 0; i<2; i++){
-				if (i==0) {
-					//System.out.print("Upper ");
-				} else {
-					//System.out.print("Lower ");
+				if (i==1)
+					idx = hull[0].points.length-idx;
+				Point p = hull[i].points[idx];
+				PointDistribution.printCoord(p, i==1);
+				hull[i].delete(p);
+				Point[] arrayl = Arrays.copyOfRange(hull[i].points, 0, idx);
+				Point[] arrayr = Arrays.copyOfRange(hull[i].points, idx+1, hull[i].points.length);
+				for (int j = 0; j<hull[i].points.length-1;j++){
+					if(j<arrayl.length) hull[i].points[j] = arrayl[j];
+					else hull[i].points[j] = arrayr[j-arrayl.length];
 				}
-				//System.out.println("hull:");
-				//Hull.printChainCoord(hull[i].inspect(), (i==0? false : true));
-				//System.out.println();
-				while (hull[i].points.length != 0){
-					Point p = hull[i].points[Math.round((float)Math.random()*(hull[i].points.length-1))];
-					hull[i].delete(p);
-					
+				hull[i].points = Arrays.copyOf(hull[i].points, hull[i].points.length-1);
+			}
+			Polygonization imgDel = new Polygonization(false);
+			Hull.showHull(imgDel, hull[0].inspect(), hull[0].points, false);
+			Hull.showHull(imgDel, hull[1].inspect(), hull[1].points, true);
 
-					//Only needed for test since all points are randomly removed
-					int idx = Arrays.binarySearch(hull[i].points, p);
-					Point[] arrayl = Arrays.copyOfRange(hull[i].points, 0, idx);
-					Point[] arrayr = Arrays.copyOfRange(hull[i].points, idx+1, hull[i].points.length);
-					for (int j = 0; j<hull[i].points.length-1;j++){
-						if(j<arrayl.length) hull[i].points[j] = arrayl[j];
-						else hull[i].points[j] = arrayr[j-arrayl.length];
-					}
-					hull[i].points = Arrays.copyOf(hull[i].points, hull[i].points.length-1);
-
-					//System.out.println("Deleted point:");
-					//PointDistribution.printCoord(p, (i==0? false : true));
-					if (i==0) {
-						//System.out.print("Upper ");
-					}else {
-						//System.out.print("Lower ");
-					}
-					//System.out.println("hull:");
-					//Hull.printChainCoord(hull[i].inspect(), (i==0? false : true));
-					//System.out.println(hull[i].points.length);
-					if (hull[i].points.length==0){
-						//System.out.println();
-					}
-					//System.out.println();
-				}
-			}*/
-			System.out.println("case "+ (++c)+" done");
 		}
-	
+		System.out.println("case "+ (++c)+" done");
+	}
+
 }
