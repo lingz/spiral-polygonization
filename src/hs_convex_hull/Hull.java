@@ -6,11 +6,15 @@ import visualize.Polygonization;
 
 public class Hull {
 	HalfHull[] hull;
+	Point[] endpoints;
 
-	Hull(Point[][] pointsAndInverse){
+	public Hull(Point[][] pointsAndInverse){
 		hull = new HalfHull[2];
 		hull[0] = new HalfHull(pointsAndInverse[0]);
 		hull[1] = new HalfHull(pointsAndInverse[1]);
+		endpoints = new Point[2];
+		endpoints[0]=pointsAndInverse[0][0];
+		endpoints[1]=pointsAndInverse[0][pointsAndInverse.length-1];
 	}
 
 	public void showHull(Polygonization img){
@@ -27,7 +31,10 @@ public class Hull {
 
 	public void delete(Point p){
 		int idx = Arrays.binarySearch(hull[0].points, p);
-		System.out.println(idx);
+		if (p.compareTo(endpoints[0]) == 0)
+			endpoints[0]=hull[0].inspect().head.next.element;
+		if (p.compareTo(endpoints[1]) == 0)
+			endpoints[1]=hull[0].inspect().tail.previous.element;
 		hull[0].delete(p);
 		hull[1].delete(hull[1].points[hull[0].points.length-idx-1]);
 	}

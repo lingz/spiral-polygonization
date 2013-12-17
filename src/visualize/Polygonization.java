@@ -59,6 +59,18 @@ public class Polygonization {
         }
     }
     
+    public void add(double[] coords) {
+    	add(coords, 0, 0);
+    }
+    
+    public void add(double[] coords, int chain) {
+    	add(coords, chain, 0);
+    }
+    
+    public void add(double[] coords, int chain, int GrayscaleColor) {
+    	add(coords[0], coords[1], chain, GrayscaleColor);
+    }
+    
     public void add(double[][] list) {
     	add(list, 0, 0);
     }

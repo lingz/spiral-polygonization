@@ -79,7 +79,7 @@ class Surface extends JPanel {
 				cordx2 = getCoord(k+1,0,i);
 				cordy2 = getCoord(k+1,1,i);
 				color = (int) Math.round(points.get(i).get(k+1)[2]);
-				System.out.print(points.get(i).get(k+1)[2] + "\n");
+//				System.out.print(points.get(i).get(k+1)[2] + "\n");
 				g2d.setColor(new Color(color, color, color));
 				drawLine(cordx, cordy, cordx2, cordy2, g2d);
 				if (k < 1) g2d.setColor(new Color(0, 0, 200));

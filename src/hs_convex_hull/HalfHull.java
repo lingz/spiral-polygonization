@@ -23,7 +23,7 @@ public class HalfHull {
 	public static void printChainCoord(Chain c, boolean inverse){
 		double x = 0;
 		if (c==null || c.head == null || c.head.element == null){
-			System.out.println("Empty chain");
+//			System.out.println("Empty chain");
 		} else {
 			ChainIterator iter = new ChainIterator(c, c.head);
 			PointDistribution.printCoord(iter.current(), inverse);
@@ -31,7 +31,7 @@ public class HalfHull {
 			while (iter.hasNext()){
 				PointDistribution.printCoord(iter.next(), inverse);
 				if (x>iter.current().coord[0]){
-					System.out.println("ARRRRG");
+//					System.out.println("ARRRRG");
 				} else {
 					x = iter.current().coord[0];
 				}
@@ -41,7 +41,7 @@ public class HalfHull {
 
 	public static void showHull(Polygonization img, Chain c, Point[] rest, boolean inverse){
 		if (c==null || c.head == null || c.head.element == null){
-			System.out.println("Empty chain");
+//			System.out.println("Empty chain");
 		} else {
 			ChainIterator iter = new ChainIterator(c, c.head);
 			double coord[] = new double[2];
