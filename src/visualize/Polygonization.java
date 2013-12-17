@@ -15,27 +15,33 @@ public class Polygonization {
     int stroke;
 	static int DEFAULT_WIDTH = 4;
     boolean disp;
+    String title = new String("Spiral Polyganization");
 
     public Polygonization() {
-        this(DEFAULT_WIDTH, true);
+        this(DEFAULT_WIDTH, true, null);
     }
     
     public Polygonization(int sizeOfTheBrush) {
-        this(sizeOfTheBrush, true);
+        this(sizeOfTheBrush, true, null);
     }
     
     public Polygonization(boolean displayCoordinates) {
-        this(DEFAULT_WIDTH, displayCoordinates);
+        this(DEFAULT_WIDTH, displayCoordinates, null);
     }
     
-    public Polygonization(int sizeOfTheBrush, boolean displayCoordinates) {
+    public Polygonization(int sizeOfTheBrush, boolean displayCoordinates, String label) {
         points = new ArrayList<>();
         debug = new ArrayList<>();
         stroke = sizeOfTheBrush;
         disp = displayCoordinates;
+        title = label != null ? label : title;
         this.show();
     }
 
+    public Polygonization(int sizeOfTheBrush, String label) {
+        this(sizeOfTheBrush, true, label);
+    }
+    
     public void add(double x, double y) {
         add(x, y, 0, 0);
     }
@@ -123,7 +129,7 @@ public class Polygonization {
             @Override
             public void run() {
 
-                Display bs = new Display(points, debug, stroke, disp);
+                Display bs = new Display(points, debug, stroke, disp, title);
                 bs.setVisible(true);
             }
         });
