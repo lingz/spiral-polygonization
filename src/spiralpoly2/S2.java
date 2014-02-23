@@ -52,33 +52,36 @@ public class S2 {
 	} 
 	
 	public static Chain[] myinspect(Hull poly, ArrayList<Point> toDelete)
-	{
+	{	
 		for (Point p : toDelete)
 		{
+			System.out.print("Deleting point:");
 			System.out.println(ArrayUtils.toString(p.coord));
 			poly.delete(p);
+			System.out.println("Deleted.");
 		}
+		System.out.println("\n");
 		return poly.inspect();
 	}
 	
 	public static LinkedList<double[]> polygonize(Point[][] points) {
-		Polygonization img1, img2, img3;
+		Polygonization imgConvex, imgConcave, img;
 		ChainIterator itr;
 		ArrayList<Point> toDelete;
-		Point last, second_last;
-		
+		Point last = new Point(new double[]{0,0});
+		Point second_last = new Point(new double[]{0,0});
 		toDelete = new ArrayList<>(); 
-		img1 = new Polygonization(3, new String("Convex"));
-		img2 = new Polygonization(3, new String("Concave"));
-		img3 = new Polygonization(3, new String("Spiral"));
+		imgConvex = new Polygonization(3, new String("Convex"));
+		imgConcave = new Polygonization(3, new String("Concave"));
+		img = new Polygonization(3, new String("Spiral"));
 		
 		if (DEBUG) 
 		{
 			for(int i = 0; i<points[0].length; i++)
 			{
-				img1.add(points[0][i].coord[0],points[0][i].coord[1], true);
-				img2.add(points[0][i].coord[0],points[0][i].coord[1], true);
-				img3.add(points[0][i].coord[0],points[0][i].coord[1], true);
+				imgConvex.add(points[0][i].coord[0],points[0][i].coord[1], true);
+				imgConcave.add(points[0][i].coord[0],points[0][i].coord[1], true);
+				img.add(points[0][i].coord[0],points[0][i].coord[1], true);
 			}
 		}
 		
@@ -104,63 +107,77 @@ public class S2 {
 //			}
 //		}
 		
+		
+		System.out.println("First special case");
 		//first iteration (first special case)
 		itr = new ChainIterator(hull[0], hull[0].head);
-		img3.add(hull[0].head.element.coord);
+		img.add(hull[0].head.element.coord);
+		imgConvex.add(hull[0].head.element.coord);
 		convex.add(hull[0].head.element.coord);
 		while (itr.hasNext())
 		{
-			img3.add(itr.peekNext().coord);
+			img.add(itr.peekNext().coord);
+			toDelete.add(itr.peekNext());
+			imgConvex.add(itr.peekNext().coord);
 			convex.add(itr.next().coord);
 		}
 		itr = new ChainIterator(hull[1], hull[1].head);
 		//to delete the right-most point
-		toDelete.add(itr.current());
 		while (itr.hasNext())
 		{
 			itr.next();
 			//do not add last(very first X min) point
 			if (itr.hasNext())
 			{
-				img3.add(invert(itr.current().coord));
+				img.add(invert(itr.current().coord));
+				imgConvex.add(invert(itr.current().coord));
 				convex.add(invert(itr.current().coord));
 				itr.next();
 				//do not add second last point to delete
 				if (itr.hasNext())
 				{
 					toDelete.add(itr.previous());
+					second_last = itr.current(); //non-inverted values
 				}
 				else
 				{
-					last = itr.previous();
+					last = itr.previous(); //non-inverted values
 				}
 			}
 		}
+		 
+		System.out.println(ArrayUtils.toString(second_last.coord));
+		System.out.println(ArrayUtils.toString(last.coord));
 		
-		
+		System.out.println("Deleting points");
 		//delete points and inspect
 		hull = myinspect(poly, toDelete);
+		toDelete.clear();
 		
+		
+		System.out.println("Second special case");
 		//second iteration (second special case)
 		itr = new ChainIterator(hull[0], hull[0].head);
 		concave.add(hull[0].head.element.coord);
 		//delete the X min point
 		toDelete.add(hull[0].head.element);
 		//start new round of drawing
-		img3.add(hull[0].head.element.coord, 1);
+		img.add(hull[0].head.element.coord, 1);
 		while (itr.hasNext())
 		{
-			img3.add(itr.peekNext().coord, 1);
+			img.add(itr.peekNext().coord, 1);
+			imgConcave.add(itr.peekNext().coord, 1);
 			concave.add(itr.next().coord);
 		}
 		itr = new ChainIterator(hull[1], hull[1].head);
-		toDelete.add(hull[1].head.element);
+		toDelete.add(invert(hull[1].head.element));
 		while (itr.hasNext())
 		{
 			itr.next();
 			if (itr.hasNext())
 			{
-				img3.add(invert(itr.current().coord));
+				img.add(invert(itr.current().coord));
+				imgConcave.add(invert(itr.current().coord));
 				concave.add(invert(itr.current().coord));
 				itr.next();
 				//do not add second last point to delete
@@ -176,18 +193,22 @@ public class S2 {
 		}
 		
 		hull = myinspect(poly, toDelete);
+		toDelete.clear();
+		
+		
+		
 		
 		//draw convex and concave
 		ListIterator<double[]> list_itr = convex.listIterator();
 		while (list_itr.hasNext())
 		{
-			img1.add(list_itr.next());
+			//img.add(list_itr.next());
 		}
 		
 		list_itr = concave.listIterator();
 		while (list_itr.hasNext())
 		{
-			img2.add(list_itr.next());
+			//img.add(list_itr.next());
 		}
 		
 		
