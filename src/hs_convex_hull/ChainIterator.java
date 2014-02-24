@@ -33,6 +33,13 @@ public class ChainIterator{
 			return current.previous.element;
 		}
 	}
+	
+	public ChainNode peekPreviousNode() {
+		if (!hasPrevious()) throw new NoSuchElementException("No previous element");
+		else {
+			return current.previous;
+		}
+	}
 
 	public Point next() {
 		Point p = peekNext();

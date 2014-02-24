@@ -41,9 +41,9 @@ public class Hull {
 			endpoints[0]=hull[0].inspect().head.next.element;
 		if (p.compareTo(endpoints[1]) == 0)
 			endpoints[1]=hull[0].inspect().tail.previous.element;
-		System.out.println(idx);
+		//System.out.println(idx);
 		hull[0].delete(p);
-		System.out.println(ArrayUtils.toString(hull[1].points[hull[0].points.length-idx-1].coord));
+		//System.out.println(ArrayUtils.toString(hull[1].points[hull[0].points.length-idx-1].coord));
 		hull[1].delete(hull[1].points[hull[0].points.length-idx-1]);
 	}
 	

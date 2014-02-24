@@ -4,7 +4,7 @@ public class ChainNode implements Cloneable{
 	public Point element;
 	ChainNode next;
 	ChainNode previous;
-	ChainNode(Point p){
+	public ChainNode(Point p){
 		this.element = p;
 		this.previous = null;
 		this.next = null;
