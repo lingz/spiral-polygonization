@@ -45,19 +45,21 @@ public class S2 {
 	}
 	
 	static double[] invert(double[] x) {
-		double[] x1 = x.clone();
-		x1[0] = 1 - x1[0];
-		x1[1] = 1 - x1[1];
+		double[] x1 = new double[2];
+		x1[0] = 1 - x[0];
+		x1[1] = 1 - x[1];
 		return x1;
 	} 
 	
 	public static Chain[] myinspect(Hull poly, ArrayList<Point> toDelete)
 	{	
-		for (Point p : toDelete)
+		ListIterator<Point> itr = toDelete.listIterator();
+		while (itr.hasNext())
 		{
+			Point del = itr.next();
 			System.out.print("Deleting point:");
-			System.out.println(ArrayUtils.toString(p.coord));
-			poly.delete(p);
+			System.out.println(ArrayUtils.toString(del.coord));
+			poly.delete(del);
 			System.out.println("Deleted.");
 		}
 		System.out.println("\n");
