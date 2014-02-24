@@ -163,17 +163,23 @@ public class S2 {
 					concave.add(currentPoint);
 					itr.previous();
 					if (itr.hasPrevious())
-					toDelete.add(itr.peekPrevious());
+					{
+						toDelete.add(itr.peekPrevious());
+						second_last = itr.currentNode();
+					}
 				}
 				else
 				{
-//					second_last = itr.previousNode();
+					last = itr.peekPreviousNode();
 				}
 			}
 		}
 		
 		hull = myinspect(poly, toDelete);
 		toDelete.clear();
+		
+		System.out.println(ArrayUtils.toString(second_last.element.coord));
+		System.out.println(ArrayUtils.toString(last.element.coord));
 		
 		//draw convex and concave
 		ListIterator<double[]> list_itr = convex.listIterator();
