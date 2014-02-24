@@ -10,6 +10,14 @@ public class ChainNode implements Cloneable{
 		this.next = null;
 	}
 	
+	public ChainNode previous() {
+		return previous;
+	}
+	
+	public ChainNode next() {
+		return next;
+	}
+	
 	public boolean equals (ChainNode node) {
 		return this.element == node.element;
 	}
