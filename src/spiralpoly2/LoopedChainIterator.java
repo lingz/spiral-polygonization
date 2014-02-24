@@ -40,7 +40,6 @@ public class LoopedChainIterator {
 //	}
 
 	public Point next() {
-		System.out.println("Calling Next");
 		if (current == chain1.tail)
 		{
 			if (chain2.isEmpty()) {
@@ -71,6 +70,13 @@ public class LoopedChainIterator {
 //		current = current.previous();
 //		return p;
 //	}
+	
+	static double[] invert(double[] x) {
+		double[] x1 = new double[2];
+		x1[0] = 1 - x[0];
+		x1[1] = 1 - x[1];
+		return x1;
+	}
 
 	public Point current(){
 		return current.element;
@@ -81,8 +87,13 @@ public class LoopedChainIterator {
 	}
 
 	public boolean isLast(){
-		System.out.println("Calling isLast ");
-		return (current == secondLast);
+		if (current == secondLast) {
+			return true;
+		}
+		else if (current.element.inverted != secondLast.element.inverted) {
+			return 0 == current.element.compareTo(new Point(new double[] {1-secondLast.element.coord[0], 1-secondLast.element.coord[1]}));
+		}
+		return false;
 	}
 
 }
