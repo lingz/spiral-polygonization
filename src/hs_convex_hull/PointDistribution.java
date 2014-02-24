@@ -40,8 +40,8 @@ public class PointDistribution {
 		for (int i = 0; i<2; i++){
 			this.uniformDS[i] = new DataSet(this.uniformData[i]);
 			this.normalDS[i] = new DataSet(this.normalData[i]);
-			this.uniformPoints[i] = PointDistribution.convertToPoints(this.uniformData[i]);
-			this.normalPoints[i] = PointDistribution.convertToPoints(this.normalData[i]);
+			this.uniformPoints[i] = PointDistribution.convertToPoints(this.uniformData[i], i==1);
+			this.normalPoints[i] = PointDistribution.convertToPoints(this.normalData[i], i==1);
 			Arrays.sort(this.uniformPoints[i]);
 			Arrays.sort(this.normalPoints[i]);
 		}
@@ -59,12 +59,12 @@ public class PointDistribution {
 	 * @param values The array of values to convert
 	 * @return An array of coordinate pairs [(x1, y1), (x2,y2),...]
 	 */
-	public static Point[] convertToPoints(double[] values)
+	public static Point[] convertToPoints(double[] values, boolean inverted)
 	{
 		Point[] array = new Point[values.length/2];
 		for (int i = 0; i<array.length;i++)
 		{
-			array[i]=new Point(new double[]{values[i*2], values[i*2+1]});
+			array[i]=new Point(new double[]{values[i*2], values[i*2+1]}, inverted);
 		}
 		return array;
 	}

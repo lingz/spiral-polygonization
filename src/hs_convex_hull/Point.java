@@ -5,9 +5,16 @@ import org.apache.commons.lang3.BooleanUtils;
 
 public class Point implements Comparable<Point>{
 	public double[] coord;
+	public boolean inverted;
 	
 	public Point(double[] coord){
 		this.coord = coord;
+		this.inverted = false;
+	}
+	
+	public Point(double[] coord, boolean inverted){
+		this.coord = coord;
+		this.inverted = inverted;
 	}
 	@Override
 	public int compareTo(Point p) {

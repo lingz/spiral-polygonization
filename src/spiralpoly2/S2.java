@@ -136,6 +136,7 @@ public class S2 {
 		System.out.println("Second case");
 		//second iteration (second special case)
 		
+//		while (!hull[0].isEmpty() && !hull[1].isEmpty())
 		itr = new ChainIterator(hull[0], last);
 		currentPoint = itr.current().coord;
 		concave.add(currentPoint);
