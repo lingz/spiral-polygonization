@@ -18,11 +18,12 @@ class Surface extends JPanel {
 
 	ArrayList<ArrayList<double[]>> points;
 	ArrayList<double []> debug;
-	int stroke, mult, radius;
+	int mult;
+	float radius, stroke;
 	boolean disp;
 
 	public Surface (ArrayList<ArrayList<double[]>> x, ArrayList<double[]> y, 
-			int sizeOfTheBrush, boolean displayCoordinates) {
+			float sizeOfTheBrush, boolean displayCoordinates) {
 		points = x;
 		debug = y;
 		stroke = sizeOfTheBrush;

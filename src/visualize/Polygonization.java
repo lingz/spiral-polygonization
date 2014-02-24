@@ -12,8 +12,8 @@ public class Polygonization {
 
     public ArrayList<double []> debug;
     public ArrayList<ArrayList<double []>> points;
-    int stroke;
-	static int DEFAULT_WIDTH = 4;
+    float stroke;
+	static float DEFAULT_WIDTH = 4;
     boolean disp;
     String title = new String("Spiral Polyganization");
 
@@ -21,7 +21,7 @@ public class Polygonization {
         this(DEFAULT_WIDTH, true, null);
     }
     
-    public Polygonization(int sizeOfTheBrush) {
+    public Polygonization(float sizeOfTheBrush) {
         this(sizeOfTheBrush, true, null);
     }
     
@@ -29,10 +29,10 @@ public class Polygonization {
         this(DEFAULT_WIDTH, displayCoordinates, null);
     }
     
-    public Polygonization(int sizeOfTheBrush, boolean displayCoordinates, String label) {
+    public Polygonization(float d, boolean displayCoordinates, String label) {
         points = new ArrayList<>();
         debug = new ArrayList<>();
-        stroke = sizeOfTheBrush;
+        stroke = d;
         disp = displayCoordinates;
         title = label != null ? label : title;
         this.show();

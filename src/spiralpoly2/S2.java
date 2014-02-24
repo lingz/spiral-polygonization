@@ -13,8 +13,9 @@ import visualize.Polygonization;
 
 public class S2 {
 
-	private static final boolean DEBUG = true, DRAW_SEPARATE = true;
-	private static final int SIZE = 6; //num of points
+	private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = true, DRAW = true;
+	private static final int SIZE = 10000; //num of points
+	private static int COUNTER = 0;
 
 	public static void main(String[] args) {
 		//int size = (int)Math.ceil(Math.random()*10000);
@@ -22,8 +23,8 @@ public class S2 {
 		PointDistribution ps = new PointDistribution(SIZE);
 		LinkedList<double[]> output = S2.polygonize(ps.uniformPoints);
 
-		if (DEBUG) {
-			Polygonization img = new Polygonization(3, SIZE < 20 && DEBUG, new String("Polygonization. Final"));
+		if (DRAW) {
+			Polygonization img = new Polygonization(0.1f, SIZE < 20 && DEBUG, new String("Polygonization. Final"));
 			for(int i = 0; i<ps.uniformPoints[0].length; i++)
 			{
 				img.add(ps.uniformPoints[0][i].coord[0],ps.uniformPoints[0][i].coord[1], true);
@@ -46,9 +47,13 @@ public class S2 {
 	public static Chain[] myInspect(Hull poly, ArrayList<Point> toDelete) {	
 		ListIterator<Point> itr = toDelete.listIterator();
 		while (itr.hasNext()) {
+			COUNTER++;
 			Point del = itr.next();
+			if (SHOW_COUNTER && COUNTER%10000==0) {
+				System.out.println(SIZE - COUNTER);
+			}
 			if (DEBUG) {
-				System.out.print("Deleting point:");
+				System.out.print(" deleting point:");
 				System.out.println(ArrayUtils.toString(del.coord));
 			}		
 			poly.delete(del);
@@ -67,14 +72,6 @@ public class S2 {
 		ChainNode last, second_last = new ChainNode(null);
 		LinkedList<double[]> convex = new LinkedList<>(), concave = new LinkedList<>();
 		double[] toAdd; //tmp point variable for simplicity
-		Polygonization img;
-
-		if (DRAW_SEPARATE) {
-			img = new Polygonization(3, SIZE < 20 && DEBUG, new String("Polygonization. Convex and Concave shaded"));
-			for(int i = 0; i<points[0].length; i++) {
-				img.add(points[0][i].coord[0],points[0][i].coord[1], true);
-			}
-		}
 
 		//delete only data structure Hull
 		Hull poly = new Hull(points);
@@ -86,8 +83,8 @@ public class S2 {
 		convex.add(itr.current().coord);
 		concave.add(itr.current().coord); //add first point to both concave and convex
 
-		
-//		if (SIZE < 5)
+
+		//		if (SIZE < 5)
 		//loop until the first point is last
 		while (itr.current() != second_last.element) {
 			if (!first) {
@@ -147,8 +144,13 @@ public class S2 {
 				System.out.println(second_last.element == itr.current());
 			}
 		}
-		
+
 		if (DRAW_SEPARATE) {
+			Polygonization img = new Polygonization(0.1f, SIZE < 20 && DEBUG, new String("Polygonization. Convex and Concave shaded"));
+			for(int i = 0; i<points[0].length; i++) {
+				img.add(points[0][i].coord[0],points[0][i].coord[1], true);
+			}
+
 			//draw convex and concave
 			ListIterator<double[]> list_itr = convex.listIterator();
 			while (list_itr.hasNext())
@@ -173,5 +175,5 @@ public class S2 {
 		}
 		return convex;
 	}
-	
+
 }
