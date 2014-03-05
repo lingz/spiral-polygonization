@@ -90,10 +90,7 @@ public class LoopedChainIterator {
 		if (current == secondLast) {
 			return true;
 		}
-		if (current.element.inverted != secondLast.element.inverted) {
-			return 0 == current.element.compareTo(new Point(new double[] {1-secondLast.element.coord[0], 1-secondLast.element.coord[1]}));
-		}
-		return false;
+		return 0 == current.element.compareTo(new Point(new double[] {1-secondLast.element.coord[0], 1-secondLast.element.coord[1]}));
 	}
 
 }

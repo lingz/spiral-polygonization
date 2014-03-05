@@ -17,14 +17,13 @@ import visualize.Polygonization;
 
 public class S2 {
 
-	private static final boolean DEBUG = true, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true;
-	private static final int SIZE = 25; //num of points
+	private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true;
+	private static final int SIZE = 10000; //num of points
 	private static int COUNTER = 0;
 
 	public static void main(String[] args) {
 		//int size = (int)Math.ceil(Math.random()*10000);
 		//System.out.println();System.out.println("n: "+size);
-		
 		PointDistribution ps = new PointDistribution(SIZE);
 		LinkedList<double[]> output = S2.polygonize(ps.uniformPoints);
 
@@ -40,7 +39,7 @@ public class S2 {
 				img.add(list_itr.next());
 			}
 		}
-		
+
 		if (DEBUG) {
 			System.out.println("OUTPUT");
 			ListIterator<double[]> list_itr = output.listIterator();
@@ -50,14 +49,14 @@ public class S2 {
 			}
 		}
 	}
-	
-//	static LinkedList<double[]> arrayToLinkedList (Point[][] points) {
-//		LinkedList<double[]> out = new LinkedList<>();
-//		for (int i=0; i<points.length; i++) {
-//			out.add(points)
-//		}
-//		return out;
-//	}
+
+	//	static LinkedList<double[]> arrayToLinkedList (Point[][] points) {
+	//		LinkedList<double[]> out = new LinkedList<>();
+	//		for (int i=0; i<points.length; i++) {
+	//			out.add(points)
+	//		}
+	//		return out;
+	//	}
 
 	static double[] invert(double[] x) {
 		double[] x1 = new double[2];
@@ -87,7 +86,7 @@ public class S2 {
 	}
 
 	public static LinkedList<double[]> polygonize(Point[][] points) {
-		boolean isConvex = true, first = true, second = false; //determine which chain to add to
+		boolean isConvex = true, first = true; //determine which chain to add to
 		//first and second loops are speical cases
 		LoopedChainIterator itr;
 		ArrayList<Point> toDelete = new ArrayList<>(); 
@@ -98,62 +97,29 @@ public class S2 {
 		//delete only data structure Hull
 		Hull poly = new Hull(points);
 		Chain[] hull = poly.inspect();
-		
+
 		convex.add(hull[0].head.element.coord);
-		
-		
-		//special cases for x < 5
-		
+		int counter = 1; //checks for any point left out inside spiral poly
+
+
+
+		//special cases
 		int pointsLength = points[0].length;
 		if (pointsLength == 1) {
 			return convex;
 		}
-		
-		if (pointsLength <= 10)
-		{
-			ChainIterator hullItr = new ChainIterator(hull[0], hull[0].head);
-			int convexCount = 1;
-			while (hullItr.hasNext()) {
-				convex.add(hullItr.next().coord);
-				convexCount++;
-			}
-			if (pointsLength != convexCount) { //add lower hull if upper is not full
-				hullItr = new ChainIterator(hull[1], hull[1].head);
-				while (hullItr.hasNext()) {
-					convex.add(invert(hullItr.next().coord));
-					convexCount++;
-				}
-			}
-			else {
-				convex.add(hull[0].head.element.coord); //add first point manually if there is no concave hull
-			}		
-			System.out.println(String.format("%d, %d", convexCount, pointsLength));
-			if (convexCount == points[0].length+1) 
-				//return only if there was no concave part. otherwise recompute everything using usuall algorithm
-				return convex;
+		if (pointsLength == 2) {
+			convex.add(hull[0].tail.element.coord);
+			return convex;
 		}
-		
-		convex.clear();
-		convex.add(hull[0].head.element.coord);
-		
+
 		last = hull[0].head; //for first loop set up first point as last
 		second_last = hull[1].tail.previous(); //second last point
 		itr = new LoopedChainIterator(hull[0], hull[1], last, last, second_last);
 		concave.add(itr.current().coord); //add first point to both concave and convex (convex is added earlier for base cases computations)
-		
-		
-		//TESTING SMALL INPUT BUG
-		Polygonization img_test = new Polygonization(1f, SIZE < 30 && DEBUG, new String("Small input test"));
-		img_test.add(hull[0].head.element.coord);
-		img_test.add(itr.current().coord, 1);
-		int counter = 0;
-		
+
 		//loop until the first point is last
 		while (itr.current() != second_last.element) {
-//			if (++counter > 25) {
-//				System.out.println("Catch loop");
-//				return concatenate(convex, concave);
-//			}
 			if (!first) {
 				toDelete.add(itr.current()); //if not the first loop, add first point to delete
 			}
@@ -167,13 +133,12 @@ public class S2 {
 				}
 				toAdd = itr.next().inverted ? invert(itr.current().coord) : itr.current().coord;
 				if (!itr.isLast()) {
+					counter++;
 					if (isConvex ) {
 						convex.add(toAdd);
-						img_test.add(toAdd);
 					}
 					else {
 						concave.add(toAdd);
-						img_test.add(toAdd, 1);
 					}
 					toDelete.add(itr.current());
 					second_last = itr.currentNode();
@@ -183,27 +148,28 @@ public class S2 {
 				//add last point if first iteration
 				if (isConvex) {
 					convex.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord);
-					img_test.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord);
 				}
 				else {
 					concave.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord);
-					img_test.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord, 1);
 				}
 			}
 			else {
-				//do not delete last point if second iteration
+				//do not delete last point on first iteration
 				toDelete.remove(toDelete.size()-1);
-				second = false;
 			}
 			isConvex = !isConvex;
 			hull = myInspect(poly, toDelete);
+			if (first && hull[1].head.next() == hull[1].tail && ++counter == pointsLength) //return if nothing is in the lower hull
+			{
+				return concatenate(convex, concave);
+			}
 			toDelete.clear();
 			if (DEBUG) {
 				System.out.println("Second last/second_last");
 				System.out.println(ArrayUtils.toString(itr.secondLast.element.coord));
 				System.out.println(ArrayUtils.toString(second_last.element.coord));	
 			}
-			
+
 			if (first) {
 				itr = new LoopedChainIterator(hull[0], hull[1], itr.last, itr.last, itr.secondLast);
 				first = false;
