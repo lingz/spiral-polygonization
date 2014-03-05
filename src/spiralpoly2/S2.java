@@ -1,30 +1,35 @@
 package spiralpoly2;
 
 import hs_convex_hull.Chain;
+import hs_convex_hull.ChainIterator;
 import hs_convex_hull.ChainNode;
 import hs_convex_hull.Hull;
 import hs_convex_hull.Point;
 import hs_convex_hull.PointDistribution;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
+
 import org.apache.commons.lang3.ArrayUtils;
+
 import visualize.Polygonization;
 
 public class S2 {
 
-	private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = true, DRAW = true;
-	private static final int SIZE = 10000; //num of points
+	private static final boolean DEBUG = true, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true;
+	private static final int SIZE = 25; //num of points
 	private static int COUNTER = 0;
 
 	public static void main(String[] args) {
 		//int size = (int)Math.ceil(Math.random()*10000);
 		//System.out.println();System.out.println("n: "+size);
+		
 		PointDistribution ps = new PointDistribution(SIZE);
 		LinkedList<double[]> output = S2.polygonize(ps.uniformPoints);
 
 		if (DRAW) {
-			Polygonization img = new Polygonization(0.1f, SIZE < 20 && DEBUG, new String("Polygonization. Final"));
+			Polygonization img = new Polygonization(1f, SIZE < 30 && DEBUG, new String("Polygonization. Final"));
 			for(int i = 0; i<ps.uniformPoints[0].length; i++)
 			{
 				img.add(ps.uniformPoints[0][i].coord[0],ps.uniformPoints[0][i].coord[1], true);
@@ -35,7 +40,24 @@ public class S2 {
 				img.add(list_itr.next());
 			}
 		}
+		
+		if (DEBUG) {
+			System.out.println("OUTPUT");
+			ListIterator<double[]> list_itr = output.listIterator();
+			while (list_itr.hasNext())
+			{
+				System.out.print(String.format("%s, ", ArrayUtils.toString(list_itr.next())));
+			}
+		}
 	}
+	
+//	static LinkedList<double[]> arrayToLinkedList (Point[][] points) {
+//		LinkedList<double[]> out = new LinkedList<>();
+//		for (int i=0; i<points.length; i++) {
+//			out.add(points)
+//		}
+//		return out;
+//	}
 
 	static double[] invert(double[] x) {
 		double[] x1 = new double[2];
@@ -76,24 +98,70 @@ public class S2 {
 		//delete only data structure Hull
 		Hull poly = new Hull(points);
 		Chain[] hull = poly.inspect();
-
+		
+		convex.add(hull[0].head.element.coord);
+		
+		
+		//special cases for x < 5
+		
+		int pointsLength = points[0].length;
+		if (pointsLength == 1) {
+			return convex;
+		}
+		
+		if (pointsLength <= 10)
+		{
+			ChainIterator hullItr = new ChainIterator(hull[0], hull[0].head);
+			int convexCount = 1;
+			while (hullItr.hasNext()) {
+				convex.add(hullItr.next().coord);
+				convexCount++;
+			}
+			if (pointsLength != convexCount) { //add lower hull if upper is not full
+				hullItr = new ChainIterator(hull[1], hull[1].head);
+				while (hullItr.hasNext()) {
+					convex.add(invert(hullItr.next().coord));
+					convexCount++;
+				}
+			}
+			else {
+				convex.add(hull[0].head.element.coord); //add first point manually if there is no concave hull
+			}		
+			System.out.println(String.format("%d, %d", convexCount, pointsLength));
+			if (convexCount == points[0].length+1) 
+				//return only if there was no concave part. otherwise recompute everything using usuall algorithm
+				return convex;
+		}
+		
+		convex.clear();
+		convex.add(hull[0].head.element.coord);
+		
 		last = hull[0].head; //for first loop set up first point as last
 		second_last = hull[1].tail.previous(); //second last point
 		itr = new LoopedChainIterator(hull[0], hull[1], last, last, second_last);
-		convex.add(itr.current().coord);
-		concave.add(itr.current().coord); //add first point to both concave and convex
-
-
-		//		if (SIZE < 5)
+		concave.add(itr.current().coord); //add first point to both concave and convex (convex is added earlier for base cases computations)
+		
+		
+		//TESTING SMALL INPUT BUG
+		Polygonization img_test = new Polygonization(1f, SIZE < 30 && DEBUG, new String("Small input test"));
+		img_test.add(hull[0].head.element.coord);
+		img_test.add(itr.current().coord, 1);
+		int counter = 0;
+		
 		//loop until the first point is last
 		while (itr.current() != second_last.element) {
+//			if (++counter > 25) {
+//				System.out.println("Catch loop");
+//				return concatenate(convex, concave);
+//			}
 			if (!first) {
 				toDelete.add(itr.current()); //if not the first loop, add first point to delete
 			}
 			while (!itr.isLast()) {
 				if (DEBUG) {
-					System.out.println("Second last/current/isLast");
+					System.out.println("Second last/last/current/isLast");
 					System.out.println(ArrayUtils.toString(itr.secondLast.element.coord));
+					System.out.println(ArrayUtils.toString(itr.last.element.coord));
 					System.out.println(ArrayUtils.toString(itr.current().coord));
 					System.out.println(itr.isLast());
 				}
@@ -101,9 +169,11 @@ public class S2 {
 				if (!itr.isLast()) {
 					if (isConvex ) {
 						convex.add(toAdd);
+						img_test.add(toAdd);
 					}
 					else {
 						concave.add(toAdd);
+						img_test.add(toAdd, 1);
 					}
 					toDelete.add(itr.current());
 					second_last = itr.currentNode();
@@ -113,12 +183,14 @@ public class S2 {
 				//add last point if first iteration
 				if (isConvex) {
 					convex.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord);
+					img_test.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord);
 				}
 				else {
 					concave.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord);
+					img_test.add(itr.current().inverted ? invert(itr.current().coord) : itr.current().coord, 1);
 				}
 			}
-			else if (second) {
+			else {
 				//do not delete last point if second iteration
 				toDelete.remove(toDelete.size()-1);
 				second = false;
@@ -127,17 +199,18 @@ public class S2 {
 			hull = myInspect(poly, toDelete);
 			toDelete.clear();
 			if (DEBUG) {
-				System.out.println("Last/SecondLast");
+				System.out.println("Second last/second_last");
 				System.out.println(ArrayUtils.toString(itr.secondLast.element.coord));
 				System.out.println(ArrayUtils.toString(second_last.element.coord));	
 			}
-			if (!first)
-			{
+			
+			if (first) {
+				itr = new LoopedChainIterator(hull[0], hull[1], itr.last, itr.last, itr.secondLast);
+				first = false;
+			} 
+			else {
 				itr = new LoopedChainIterator(hull[0], hull[1], itr.secondLast, itr.secondLast, second_last);
 			}
-			itr = new LoopedChainIterator(hull[0], hull[1], itr.last, itr.last, itr.secondLast);
-			first = false;
-			second  = true;
 
 			if (DEBUG) {
 				System.out.println("SecondLast == Current. End Condition");
@@ -146,7 +219,7 @@ public class S2 {
 		}
 
 		if (DRAW_SEPARATE) {
-			Polygonization img = new Polygonization(0.1f, SIZE < 20 && DEBUG, new String("Polygonization. Convex and Concave shaded"));
+			Polygonization img = new Polygonization(0.01f, SIZE < 20 && DEBUG, new String("Polygonization. Convex and Concave shaded"));
 			for(int i = 0; i<points[0].length; i++) {
 				img.add(points[0][i].coord[0],points[0][i].coord[1], true);
 			}
