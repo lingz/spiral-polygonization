@@ -3,7 +3,9 @@ package spiralpoly;
 // Coded by Lingliang Zhang
 
 public class S1 {
+    private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true;
 	public static LinkedList polygonize(LinkedList input) {
+
 		LinkedList convex = new LinkedList();
 		LinkedList concave = new LinkedList();
 		ListNode last = null;
@@ -13,20 +15,26 @@ public class S1 {
 		// the linked list with all remaining Integers
 		LinkedList remaining = BucketSort.sort(input);
 		
-		System.out.println("Original:");
-		LinkedList.printList(remaining);
-		System.out.println(remaining.length);
+		if (DEBUG) {
+            System.out.println("Original:");
+            LinkedList.printList(remaining);
+            System.out.println(remaining.length);
+        }
 				
 		// special first case
-		LinkedList hull = Graham.graham(remaining);
-		System.out.println("First Shell:");
-		LinkedList.printList(hull);
-		System.out.println(hull.length);
-		System.out.println("convex");
-		convex.newConcatenate(hull);
-		LinkedList.printList(convex);
-		System.out.println(convex.length);
-		
+		LinkedList hull = new Graham().graham(remaining);
+	    if (DEBUG) {
+            LinkedList.printList(hull);
+            System.out.println("First Shell:");
+            System.out.println("Length:");
+            System.out.println(hull.length);
+            System.out.println("Convex");
+            convex.newConcatenate(hull);
+            LinkedList.printList(convex);
+            System.out.println("Convex Length");
+            System.out.println(convex.length);
+        }
+
 		hull.top();
 		hull.pop();
 		
@@ -38,7 +46,7 @@ public class S1 {
 			LinkedList.printList(to_remove);
 			LinkedListItr remove_iterator = to_remove.first();
 			LinkedListItr remaining_iterator = remaining.first();
-			while (!remove_iterator.isPastEnd()){
+			while (remove_iterator.hasNext()){
 				if (remaining_iterator.current.element[0] == remove_iterator.current.element[0]
 						&& remaining_iterator.current.element[1] == remove_iterator.current.element[1]){
 					remaining_iterator.current.previous.next = remaining_iterator.current.next; // delete the node
@@ -56,7 +64,7 @@ public class S1 {
 			System.out.println("Remaining:");
 			LinkedList.printList(remaining);
 			System.out.println(remaining.length);
-			hull = Graham.graham(remaining);
+			hull = new Graham().graham(remaining); // change this
 			
 			System.out.println("Next Shell:");
 			LinkedList.printList(hull);
@@ -83,14 +91,14 @@ public class S1 {
 			
 			if (hull.isEmpty()) {
 				if (isConvex) {
-					convex.append2(secondLast);
+					convex.appendToHull(secondLast);
 					if (last != null) {
-						convex.append2(last);
+						convex.appendToHull(last);
 					}
 				} else {
-					concave.append2(secondLast);
+					concave.appendToHull(secondLast);
 					if (last != null) {
-						concave.append2(last);
+						concave.appendToHull(last);
 					}
 				}
 				System.out.println("wrapping up");

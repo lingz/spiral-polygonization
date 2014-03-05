@@ -1,10 +1,24 @@
 package spiralpoly;
+
 public class Graham {
 
-	public static LinkedList graham(LinkedList SortedList) {
+    ListNode listHead = null;
+    ListNode newListhead = null;
+
+    // made non static so it can store what the supposed listHead is supposed to be
+    public Graham(ListNode listHead) {
+        this.listHead = listHead;
+    }
+
+    public Graham() {
+
+    }
+
+
+	public LinkedList graham(LinkedList sortedList) {
 		// return straight away if there is only one element in the list
-		if (SortedList.header.next.next == SortedList.tail) {
-			return SortedList;
+		if (sortedList.header.next.next == sortedList.tail) {
+			return sortedList;
 		}
 
 		// Separate the points to for upper convex hull and lower convex hull
@@ -12,33 +26,43 @@ public class Graham {
 		System.out.println(upper.length);
 		LinkedList lower = new LinkedList();
 
-		//Get first and last node
-		ListNode firstNode = SortedList.header.next;
-		ListNode currentNode = firstNode;
 
-		while (currentNode.next.element != null){
+
+
+		//Get first and last node
+		ListNode firstNode = sortedList.getHead();
+
+
+        // we need to make sure that if the firstNode is the listHead, we rotate it away.
+        if (firstNode == listHead) {
+            sortedList.rotateToHead(firstNode.getNext());
+            firstNode = sortedList.getHead();
+        }
+
+        ListNode currentNode = firstNode;
+
+            while (currentNode.next.element != null){
 			currentNode = currentNode.next;
 		}
 		ListNode lastNode = currentNode;
 		currentNode = firstNode.next;
 
-		upper.append2(firstNode);
+		upper.appendToHull(firstNode);
 		System.out.println(upper.length);
-		lower.append2(firstNode);
+		lower.appendToHull(firstNode);
 
 		while (currentNode.next.element != null){
 			if (ccw(firstNode, lastNode, currentNode) <= 0){
-				lower.append2(currentNode);
+				lower.appendToHull(currentNode);
 			}
 			else{
-				upper.append2(currentNode);
+				upper.appendToHull(currentNode);
 				System.out.println(upper.length);
 			}
 			currentNode = currentNode.next;
 		}
-		upper.append2(lastNode);
-		System.out.println(upper.length);
-		lower.append2(lastNode);
+		upper.appendToHull(lastNode);
+		lower.appendToHull(lastNode);
 		//Declare convexHull for the output
 		LinkedList convexHull;
 
@@ -54,18 +78,24 @@ public class Graham {
 		// Combine the two hulls
 		convexHull = upperHull;
 		convexHull.concatenate(lowerHull);
+        // delete them from the origin list
+        convexHull.removeOriginals();
+        if (newListhead != null) convexHull.rotateToHead(newListhead);
 		return convexHull;
 	}
-	public static LinkedList findHull(LinkedList setOfPoints, Integer direction){
+
+	public LinkedList findHull(LinkedList setOfPoints, Integer direction){
+        ListNode latestAddition;
 		LinkedList hull = new LinkedList();
 		//Put first two points in the hull
 		ListNode pointConsidered = setOfPoints.header.next;
-		hull.append2(pointConsidered);
+		hull.appendToHull(pointConsidered);
 		ListNode pointSecondLast = pointConsidered;
 		pointConsidered = pointConsidered.next;
-		hull.append2(pointConsidered);
+		hull.appendToHull(pointConsidered);
 		ListNode pointLast = pointConsidered;
 		pointConsidered = pointConsidered.next;
+        LinkedList.printList(hull);
 
 		//Graham scan
 		while (pointConsidered.element != null){
@@ -74,19 +104,26 @@ public class Graham {
 			// accept the point and keep scanning
 
 			if (direction*ccw(pointSecondLast, pointLast, pointConsidered) >= 0){
-				hull.append2(pointConsidered);
+				latestAddition = hull.appendToHull(pointConsidered);
 				pointSecondLast = pointLast;
 				pointLast = pointConsidered;
 				pointConsidered = pointConsidered.next;
-
+                if (pointLast.original == listHead) newListhead = latestAddition;
 			}
 			// if not remove the last point added
 			else{
-				hull.pop();
-				pointLast = hull.tail.previous;
-				pointSecondLast = pointLast.previous;
+                System.out.println(pointSecondLast.previous.element);
+                if (pointSecondLast.previous != hull.header) {
+                    LinkedList.printList(hull);
+                    hull.pop();
+                    pointLast = hull.tail.previous;
+                    pointSecondLast = pointLast.previous;
+                    LinkedList.printList(hull);
+                }
 			}
-		}
+
+
+        }
 		return hull;
 	}
 
@@ -149,13 +186,14 @@ public class Graham {
 		data.insert(x,p);
 		p.advance();
 
-
 		//Test
 		System.out.println("Given sorted points (X-ascending, Y-ascending): ");
-		LinkedList.printList(data);	
-		LinkedList convexResult = graham(data);
+		LinkedList.printList(data);
+		LinkedList convexResult = new Graham().graham(data);
 		System.out.println();
 		System.out.println("Convex Hull: ");
 		LinkedList.printList(convexResult);
-	}
+        System.out.println("Remaining points");
+        LinkedList.printList(data);
+    }
 }

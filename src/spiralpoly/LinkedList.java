@@ -55,6 +55,24 @@ public class LinkedList
 		header.next = null;
 	}
 
+    public ListNode getHead() {
+        return header.next;
+    }
+
+    public ListNode getTail() {
+        return tail.previous;
+    }
+
+    // takes a listNode and ensures it is at the start of the list
+    public void rotateToHead(ListNode newHead) {
+        if (newHead.getPrevious() == header) return;
+        ListNode oldTail = getTail();
+        ListNode oldHead = getHead();
+        ListNode newTail = newHead.getPrevious();
+        tail = newTail;
+        header = newHead;
+        oldTail.setNext(oldHead);
+    }
 
 	/**
 	 * Return an iterator representing the header node.
@@ -147,9 +165,12 @@ public class LinkedList
 		tail.previous = node;
 		length += 1;
 	}
-	
-	public void append2(ListNode node) {
-		append(new ListNode(node.element));
+
+	public ListNode appendToHull(ListNode node) {
+        ListNode clone = node.clone();
+
+		append(clone);
+        return clone;
 /*		if (node.element != null){
 			double[] newElement={0,0};
 			newNode.element = newElement;
@@ -167,7 +188,7 @@ public class LinkedList
 		newNode.previous = last;
 		tail.previous = newNode;*/
 	}
-	
+
 	// Pop method
 	public ListNode pop() {
 		if (tail.previous != header) {
@@ -251,9 +272,13 @@ public class LinkedList
 		while (frontNode != backNode){
 
 			double[] newElement;
+            ListNode newOriginal;
 			newElement = backNode.element;
-			backNode.element = frontNode.element;
+            newOriginal = backNode.original;
+			backNode.element = frontNode.element;      //HERE IS THE BUG
+            backNode.original = frontNode.original;
 			frontNode.element = newElement;
+            frontNode.original = newOriginal;
 
 			if (frontNode.next == backNode){
 				break;
@@ -296,6 +321,25 @@ public class LinkedList
 	}
 	return string1;
 	}
+
+    // iterates through a list and removes all the originals from the list.
+    public void removeOriginals() {
+        System.out.println("To DELETE");
+        LinkedList.printList(this);
+        LinkedListItr itr = first();
+        if (itr.current.element == null) return;
+        ListNode current;
+        do {
+            System.out.println("Deleting an original");
+            System.out.println(itr.current.element[0]);
+            current = itr.current;
+            if (current.element == null) System.out.println("THIS FUNCTION IS WRONG");
+            current.deleteOriginal();
+            itr.advance();
+        } while (!itr.isPastEnd());
+
+
+    }
 	
 	public static void main(String[] args){
     	LinkedList data = new LinkedList();
