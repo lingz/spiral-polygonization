@@ -8,37 +8,52 @@ package spiralpoly;
 public class BucketSort{
 
     public static LinkedList sort(LinkedList unsortedList){
-    	
-    	double maxVal = findMax(unsortedList);
+        System.out.println("CHECKING STATE");
+        unsortedList.printDetailed();
+
+        double maxVal = findMax(unsortedList);
     	
     	int [] bucket=new int[convertfromDec(maxVal)+1];
+        System.out.println(convertfromDec(maxVal) + 1);
         
         for (int i=0; i<bucket.length; i++){
             bucket[i]=0;
         }
         
         LinkedListItr elt = unsortedList.first();
-        
-        while(elt.current.next!=null){
-        	bucket[convertfromDec(elt.retrieve( )[0])]++;
-        	elt.advance();
+        while(!elt.isPastEnd()){
+
+            bucket[convertfromDec(elt.retrieve( )[0])]++;
+            elt.advance();
         }
-    
+        System.out.println("CHECKING LOOP");
+        System.out.println(unsortedList);
+
         LinkedList sorted = new LinkedList();
         
         for(int i=0; i < bucket.length; i++){
         	//assuming a normal arrangement of points, where not more than 2 points have the same 
         	// x or y axes individually
-        	
+
         	for(int j=0; j < bucket[i];j++){
-        		double[] nodeElement = getNode(convertfromInt(i), unsortedList);
+                double[] nodeElement = getNode(convertfromInt(i), unsortedList);
         		ListNode node = new ListNode(nodeElement);
-        		sorted.append(node);
+                System.out.println("SEARCHING");
+                System.out.println(i);
+                System.out.println("RETRIEVED");
+                System.out.println(node);
+                System.out.println(unsortedList);
+                sorted.append(node);
         	}
         }
         //sorted.printList(sorted);
         LinkedList finalList = new LinkedList();
+        System.out.println("PRE STATE");
+        sorted.printDetailed();
         finalList = sortY(sorted);
+        System.out.println("POST STATE");
+        finalList.printDetailed();
+        System.out.println("END CHECK");
         return finalList;
     }
   
@@ -53,13 +68,18 @@ public class BucketSort{
     		}
     		elt.advance();
     	}while(elt.current.next!=null);
-    	return null;
+        System.out.println("RETURNING NULL");
+        System.out.println(x);
+        System.out.println(list);
+        return null;
     }
     
     public static LinkedList sortY(LinkedList data){
     	LinkedListItr itr = data.first();
-    	while(itr.current.next.next !=null){
-    		if(itr.current.element[0]==itr.current.next.element[0]){
+    	while(itr.hasNext()){
+            System.out.println(itr.current);
+            System.out.println(itr.current.next.next);
+            if(itr.current.element[0]==itr.current.next.element[0]){
     			if(itr.current.element[1]>itr.current.next.element[1]){
     				double temp = itr.current.element[1];
     				itr.current.element[1] = itr.current.next.element[1];

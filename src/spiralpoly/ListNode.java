@@ -38,8 +38,6 @@ public class ListNode
 
     // eliminates itself from the LinkedList
     public void removeSelf() {
-        System.out.println(element[0]);
-        System.out.println(element[1]);
         if (previous.next == this && next.previous == this)
             previous.setNext(next);
 
@@ -57,11 +55,28 @@ public class ListNode
         return clone;
     }
 
+    // clone only the element value
+    public ListNode shallowClone() {
+        return new ListNode(this.element);
+    }
+
     public void deleteOriginal() {
-        System.out.println("checking against original");
-        System.out.println(this.element[0]);
-        System.out.println(this.original.element[0]);
         original.removeSelf();
+    }
+
+    public String toString() {
+        String left;
+        String right;
+        if (previous == null)
+            left = "";
+        else
+            left = (previous.element == null) ? "*Empty*" : "*" + previous.element[0] + "," + previous.element[1] + "*";
+        if (next == null)
+            right = "";
+        else
+            right = (next.element == null) ? "*Empty*" : "*" + next.element[0] + "," + next.element[1] + "*";
+        String center = (element == null) ? "*Empty*" : "*" + element[0] + "," + element[1] + "*";
+        return left + "<-" + center + "->" + right;
     }
 
 		// Friendly data; accessible by other package routines

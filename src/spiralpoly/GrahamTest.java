@@ -37,7 +37,7 @@ public class GrahamTest {
 		p.advance();
 
 		//The return string method is a modified version of the printlist method that returns a string
-		LinkedList convexResult = Graham.graham(data);
+		LinkedList convexResult = new Graham().graham(data);
 		String expectedString = "(2.591231629,9.3815334) (7.679133975,9.221639628) (7.679133975,0.7783603725) (5.0,0.0) (0.0,5.0) ";
 		System.out.println(LinkedList.returnString(convexResult));
 		Assert.assertEquals(expectedString, LinkedList.returnString(convexResult));
@@ -67,7 +67,7 @@ public class GrahamTest {
 		data.insert(x,p);
 		p.advance();
 
-		LinkedList convexResult = Graham.graham(data);
+		LinkedList convexResult = new Graham().graham(data);
 		String expectedString = "(1.0,1.0) (2.0,5.0) (3.0,8.0) (6.0,5.0) (5.0,4.0) ";
 		System.out.println(LinkedList.returnString(convexResult));
 		Assert.assertEquals(expectedString, LinkedList.returnString(convexResult));

@@ -65,13 +65,13 @@ public class LinkedList
 
     // takes a listNode and ensures it is at the start of the list
     public void rotateToHead(ListNode newHead) {
-        if (newHead.getPrevious() == header) return;
+        if (newHead.getPrevious().element == null) return;
         ListNode oldTail = getTail();
         ListNode oldHead = getHead();
         ListNode newTail = newHead.getPrevious();
-        tail = newTail;
-        header = newHead;
         oldTail.setNext(oldHead);
+        header.setNext(newHead);
+        newTail.setNext(tail);
     }
 
 	/**
@@ -134,10 +134,17 @@ public class LinkedList
 	 */
 	public LinkedListItr findPrevious( double[] x )
 	{
+          System.out.println("FINDING PREVIOUS");
+          System.out.println(x[0] + "," + x[1]);
 /* 1*/	  ListNode itr = header;
 
-/* 2*/	  while( itr.next != null && !(itr.next.element[0]==x[0]) && !(itr.next.element[1]==x[1]) )
+/* 2*/	  while( itr.next.element != null && !((itr.next.element[0]==x[0]) && (itr.next.element[1]==x[1])) )
 /* 3*/		  itr = itr.next;
+
+        if (itr.next.element == null) System.out.println("EPIC FAILURE");
+
+        System.out.println("FOUND");
+        System.out.println(itr);
 
 /* 4*/	  return new LinkedListItr( itr );
 	}
@@ -149,11 +156,12 @@ public class LinkedList
 	public void remove( double[] x )
 	{
 		LinkedListItr p = findPrevious( x );
+        System.out.println("REMOVING");
+        System.out.println(p.current.next);
 
 		if( p.current.next != null ) {
 			p.current.next = p.current.next.next;  // Bypass deleted node
 			length -= 1;
-			
 		}
 	}
 	// Append method
@@ -316,22 +324,45 @@ public class LinkedList
 	else
 	{
 		LinkedListItr itr = theList.first( );
-		for( ; !itr.isPastEnd( ); itr.advance( ) )
-			string1 = string1.concat("(" + itr.retrieve( )[0] + ","+ itr.retrieve( )[1]+")" + " " );
+		for( ; !itr.isPastEnd(); itr.advance( ) )  {
+
+            string1 = string1.concat("(" + itr.retrieve( )[0] + ","+ itr.retrieve( )[1]+")" + " " );
+
+        }
+
 	}
 	return string1;
 	}
 
+    public String printDetailed()
+    {	String string1 = "";
+
+        if(isEmpty() )
+            string1 = string1.concat("Empty list" );
+        else
+        {
+            LinkedListItr itr = first( );
+            for( ; itr.current.next != null; itr.current = itr.current.next)  {
+
+                string1 = string1.concat(itr.current.toString() + "\n");
+
+            }
+
+        }
+        System.out.println(string1);
+        return string1;
+    }
+
+    public String toString() {
+        return returnString(this);
+    }
+
     // iterates through a list and removes all the originals from the list.
     public void removeOriginals() {
-        System.out.println("To DELETE");
-        LinkedList.printList(this);
         LinkedListItr itr = first();
         if (itr.current.element == null) return;
         ListNode current;
         do {
-            System.out.println("Deleting an original");
-            System.out.println(itr.current.element[0]);
             current = itr.current;
             if (current.element == null) System.out.println("THIS FUNCTION IS WRONG");
             current.deleteOriginal();

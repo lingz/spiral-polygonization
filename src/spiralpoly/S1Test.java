@@ -7,7 +7,7 @@ import visualize.Polygonization;
 public class S1Test {
 
 	@Test
-	public void circle() {
+	public void circle() throws Exception{
 		LinkedList data = new LinkedList();
 		LinkedListItr p = data.zeroth();
 		Polygonization img = new Polygonization(3);
@@ -56,7 +56,7 @@ public class S1Test {
 	}
 
 	@Test
-	public void wave(){
+	public void wave() throws Exception{
 		LinkedList data = new LinkedList();
 		LinkedListItr p = data.zeroth();
 		int scale = 10;
