@@ -4,10 +4,12 @@ public class Graham {
 
     ListNode listHead = null;
     ListNode newListhead = null;
+    int numToKeep = 0;
 
     // made non static so it can store what the supposed listHead is supposed to be
     public Graham(ListNode listHead) {
         this.listHead = listHead;
+        this.numToKeep = numToKeep;
     }
 
     public Graham() {
@@ -98,7 +100,6 @@ public class Graham {
 
 			// if the last two points in the hull and the point to be considered form convex, 
 			// accept the point and keep scanning
-
 			if (direction*ccw(pointSecondLast, pointLast, pointConsidered) >= 0){
 				latestAddition = hull.appendToHull(pointConsidered);
 				pointSecondLast = pointLast;
@@ -108,12 +109,17 @@ public class Graham {
 			}
 			// if not remove the last point added
 			else{
+                System.out.println("REMOVING LAST");
                 if (pointSecondLast.previous != hull.header) {
-                    LinkedList.printList(hull);
+                    System.out.println(hull);
+                    System.out.println(pointLast);
+                    System.out.println(pointSecondLast);
                     hull.pop();
                     pointLast = hull.tail.previous;
                     pointSecondLast = pointLast.previous;
-                    LinkedList.printList(hull);
+                    System.out.println("***");
+                    System.out.println(pointLast);
+                    System.out.println(pointSecondLast);
                 }
 			}
 

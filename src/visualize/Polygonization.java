@@ -1,11 +1,10 @@
 package visualize;
 
-import java.util.ArrayList;
-
-import javax.swing.SwingUtilities;
-
 import spiralpoly.LinkedList;
 import spiralpoly.LinkedListItr;
+
+import javax.swing.*;
+import java.util.ArrayList;
 
 
 public class Polygonization {
@@ -98,19 +97,23 @@ public class Polygonization {
     }
     
     public void add(LinkedList list) {
-        add(list, 0, 0);
+        add(list, 0, 0, 1);
     }
-    
+
     public void add(LinkedList list, int chain) {
-        add(list, chain, 0);
+        add(list, chain, 0, 1);
+    }
+
+    public void add(LinkedList list, int chain, int scale) {
+        add(list, chain, 0, scale);
     }
     
-    public void add(LinkedList list, int chain, int GrayscaleColor) {
-    	if( ! list.isEmpty( ) ) {
+    public void add(LinkedList list, int chain, int GrayscaleColor, int scale) {
+    	if( ! list.isEmpty() ) {
     		LinkedListItr itr = list.first( );
     		for( ; !itr.isPastEnd( ); itr.advance( ) ) {
-    			double x = itr.retrieve( )[0]; 
-    			double y = itr.retrieve( )[1];
+    			double x = itr.retrieve( )[0] / scale;
+    			double y = itr.retrieve( )[1] / scale;
 	            if (chain < points.size())
 	            	points.get(chain).add(new double[] {x,y, GrayscaleColor});
 	            else {

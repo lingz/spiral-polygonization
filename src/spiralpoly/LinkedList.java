@@ -368,7 +368,10 @@ public class LinkedList
             current.deleteOriginal();
             itr.advance();
         } while (!itr.isPastEnd());
+    }
 
+    // the number of originals to leave at the end.
+    public void removeOrignals(int numToKeep) {
 
     }
 	

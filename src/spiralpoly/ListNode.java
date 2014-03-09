@@ -3,8 +3,22 @@
 // of package DataStructures
 package spiralpoly;
 
-public class ListNode
+public class ListNode implements Comparable<ListNode>
 {
+
+    public int compareTo(ListNode other) {
+        if (this.element[0] > other.element[0])
+            return 1;
+        else if (this.element[0] == other.element[0])
+            if (this.element[1] > other.element[1])
+                return 1;
+            else if (this.element[1] == other.element[1])
+                return 0;
+            else
+                return -1;
+        else
+            return -1;
+    }
 		// Constructors
 	public ListNode( double[] theElement )
 	{
