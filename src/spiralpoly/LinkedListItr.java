@@ -62,7 +62,7 @@ package spiralpoly;
                 current = current.next;
         }
         
-        public void back() {
+        public void goBack() {
         	if (!isPastEnd()) {
         		current = current.previous;
         	}

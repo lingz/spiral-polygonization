@@ -2,6 +2,7 @@ package spiralpoly;
 // S1 algorithm for Spiral Polygonization Paper by Godfried et al.
 // Coded by Lingliang Zhang
 
+import hs_convex_hull.Point;
 import hs_convex_hull.PointDistribution;
 import visualize.Polygonization;
 
@@ -13,7 +14,7 @@ public class S1 {
     public static LinkedList polygonize(LinkedList input) throws Exception{
 
 		LinkedList convex = new LinkedList();
-		LinkedList concave = new LinkedList();
+        LinkedList concave = new LinkedList();
         ListNode nextHead = null;
         boolean isConvex = true;
         Polygonization img;
@@ -27,18 +28,49 @@ public class S1 {
 
         while (!remaining.isEmpty()){
             // special first case
+            if (DEBUG) {
+                System.out.println("PROGRESS BEFORE START");
+                System.out.println(remaining);
+            }
+
+            if (DRAW && DEBUG && STEP) {
+                System.out.println("PREPARING TO GRAHAM");
+                img = new Polygonization(3);
+                img.add(remaining, 0, 200, SCALE);
+                System.out.println("Press Enter to Continue");
+                System.in.read();
+            }
+
             hull = new Graham(nextHead).graham(remaining);
-            // throw two points back in, taking the last of those points as the nextHead
+
+            // throw two points goBack in, taking the last of those points as the nextHead
+            if (DRAW && DEBUG && STEP) {
+                System.out.println("THIS IS THE HULL");
+                System.out.println(hull);
+                img = new Polygonization(3);
+//                img.add(convex, 0, 150, SCALE);
+                img.add(input, SCALE, true);
+                img.add(hull, 0, 0, SCALE);
+//                img.add(remaining, 0, 200, SCALE);
+                System.out.println("Press Enter to Continue");
+                System.in.read();
+            }
             if (DEBUG) {
                 System.out.println("PROGRESS PRE REMOVAL");
                 System.out.println(hull);
                 System.out.println(remaining);
             }
 
-            if (!remaining.isEmpty()) {
-                nextHead = hull.pop().shallowClone();
-                remaining.append(nextHead);
-                remaining.append(hull.pop().shallowClone());
+            // if remaining has two elements left, prepare for the next loop, otherwise end
+            if (remaining.hasLeft(3)) {
+                hull.pop();
+                nextHead = hull.pop().original;
+                System.out.println("REMAINING HAS LEFT");
+            } else {
+                System.out.println("REMAINING DOES NOT HAVE LEFT, TERMINATING");
+                while (!remaining.isEmpty())
+                    remaining.pop();
+
             }
 
             if (DEBUG) {
@@ -46,55 +78,49 @@ public class S1 {
                 System.out.println(hull);
                 System.out.println(remaining);
             }
-
-            // merge copies of lists
-			if (isConvex) {
-				System.out.println("now on convex");
-				convex.newConcatenate(hull);
-			} else {
-				System.out.println("now on concave");
-				concave.newConcatenate(hull);
-			}
-            isConvex = !isConvex;
-
-            if (DRAW && DEBUG) {
+            if (DRAW && DEBUG && STEP) {
+                System.out.println("THIS IS AFTER POPPING");
+                System.out.println(hull);
                 img = new Polygonization(3);
-                img.add(concave, 0, SCALE);
-                img.add(convex, 1, SCALE);
-            }
-            if (DEBUG) {
-                System.out.println("ONE LOOP FINISHED");
-                System.out.println("CONVEX:");
-                System.out.println(convex);
-                System.out.println("CONCAVE");
-                System.out.println(concave);
-            }
-
-            if (STEP) {
+//                img.add(convex, 0, 150, SCALE);
+                img.add(input, SCALE, true);
+                img.add(hull, 0, 0, SCALE);
+//                img.add(remaining, 0, 200, SCALE);
                 System.out.println("Press Enter to Continue");
                 System.in.read();
             }
 
+            // merge copies of lists
+
+            if (isConvex)
+			    convex.newConcatenate(hull);
+            else
+                concave.newConcatenate(hull);
+
+            // flip the direction from clockwise to counter-clockwise or vice versa
+            isConvex = !isConvex;
+
+            if (DEBUG) {
+                System.out.println("ONE LOOP FINISHED");
+                System.out.println("CONVEX:");
+                System.out.println(convex);
+            }
+
+
 
 		}
 		System.out.println("final convex");
+        convex.concatenate(concave.reverse_2());
 		LinkedList.printList(convex);
-		System.out.println(convex.length);
-		System.out.println("final concave");
-		LinkedList.printList(concave);
-		System.out.println(concave.length);
-		System.out.println("final concave reversed");
-//        if (!concave.isEmpty()) concave.pop();
-		LinkedList.printList(concave);
 
-		LinkedList result = concave.concatenate((convex));
 
         if (DRAW) {
             System.out.println("DRAWING");
+            System.out.println(convex);
             img = new Polygonization(3);
-            img.add(result, 0, SCALE);
+            img.add(convex, 0, SCALE);
         }
-        return result;
+        return convex;
 
 
 
@@ -175,11 +201,11 @@ public class S1 {
 //        p.advance();
 
 
-        PointDistribution ps = new PointDistribution(10);
-        double[][] seed = ps.normalData;
+        PointDistribution ps = new PointDistribution(100);
+        Point[][] seed = ps.uniformPoints;
 
         for (int i = 0; i < seed[0].length; i++) {
-            data.insert(new double[] {seed[0][i], seed[1][i]}, p);
+            data.insert(new double[] {seed[0][i].coord[0], seed[0][i].coord[1]}, p);
             p.advance();
         }
 

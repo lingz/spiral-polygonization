@@ -107,6 +107,17 @@ public class Polygonization {
     public void add(LinkedList list, int chain, int scale) {
         add(list, chain, 0, scale);
     }
+
+    public void add(LinkedList list, int scale, boolean notInTheHull) {
+        if( ! list.isEmpty() ) {
+            LinkedListItr itr = list.first( );
+            for( ; !itr.isPastEnd( ); itr.advance( ) ) {
+                double x = itr.retrieve( )[0] / scale;
+                double y = itr.retrieve( )[1] / scale;
+                add(x, y, notInTheHull);
+            }
+        }
+    }
     
     public void add(LinkedList list, int chain, int GrayscaleColor, int scale) {
     	if( ! list.isEmpty() ) {
@@ -114,8 +125,9 @@ public class Polygonization {
     		for( ; !itr.isPastEnd( ); itr.advance( ) ) {
     			double x = itr.retrieve( )[0] / scale;
     			double y = itr.retrieve( )[1] / scale;
-	            if (chain < points.size())
-	            	points.get(chain).add(new double[] {x,y, GrayscaleColor});
+	            if (chain < points.size()) {
+                    points.get(chain).add(new double[] {x,y, GrayscaleColor});
+                }
 	            else {
 	            	ArrayList<double []> tmp = new ArrayList<> ();
 	            	tmp.add(new double[] {x,y, GrayscaleColor});

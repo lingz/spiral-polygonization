@@ -6,6 +6,7 @@ public class Graham {
     ListNode newListhead = null;
     int numToKeep = 0;
 
+
     // made non static so it can store what the supposed listHead is supposed to be
     public Graham(ListNode listHead) {
         this.listHead = listHead;
@@ -33,13 +34,6 @@ public class Graham {
 		//Get first and last node
 		ListNode firstNode = sortedList.getHead();
 
-
-        // we need to make sure that if the firstNode is the listHead, we rotate it away.
-        if (firstNode == listHead) {
-            sortedList.rotateToHead(firstNode.getNext());
-            firstNode = sortedList.getHead();
-        }
-
         ListNode currentNode = firstNode;
 
             while (currentNode.next.element != null){
@@ -49,7 +43,7 @@ public class Graham {
 		currentNode = firstNode.next;
 
 		upper.appendToHull(firstNode);
-		lower.appendToHull(firstNode);
+//		lower.appendToHull(firstNode);
 
 		while (currentNode.next.element != null){
 			if (ccw(firstNode, lastNode, currentNode) <= 0){
@@ -60,79 +54,80 @@ public class Graham {
 			}
 			currentNode = currentNode.next;
 		}
-		upper.appendToHull(lastNode);
+//		upper.appendToHull(lastNode);
 		lower.appendToHull(lastNode);
+        lower.reverse_2();
+        upper.concatenate(lower);
+        LinkedList convexHull = findHull(upper);
+        convexHull.printDetailed();
+
 		//Declare convexHull for the output
-		LinkedList convexHull;
+//		LinkedList convexHull;
+
 
 		// Make each convex hull
-		LinkedList lowerHull = findHull(lower,1);
-		LinkedList upperHull = findHull(upper,-1);
+//		LinkedList lowerHull = findHull(lower,1);
+//		LinkedList upperHull = findHull(upper,-1);
 
-		upperHull.pop();
-		//Remove the same beginning and end of the lower hull
-		lowerHull.reverse_2();
-		lowerHull.pop();
-		// Combine the two hulls
-		convexHull = upperHull;
-		convexHull.concatenate(lowerHull);
+//		upperHull.pop();
+//		//Remove the same beginning and end of the lower hull
+//		lowerHull.reverse_2();
+//		lowerHull.pop();
+//		// Combine the two hulls
+//		convexHull = upperHull;
+//		convexHull.concatenate(lowerHull);
         // delete them from the origin list
-        convexHull.removeOriginals();
         if (newListhead != null) convexHull.rotateToHead(newListhead);
-		return convexHull;
+        convexHull.removeOriginals(2); // leave the last two always
+        return convexHull;
 	}
 
-	public LinkedList findHull(LinkedList setOfPoints, Integer direction){
-        ListNode latestAddition;
-		LinkedList hull = new LinkedList();
+	public LinkedList findHull(LinkedList setOfPoints){
+
 		//Put first two points in the hull
-		ListNode pointConsidered = setOfPoints.header.next;
-		hull.appendToHull(pointConsidered);
-		ListNode pointSecondLast = pointConsidered;
-		pointConsidered = pointConsidered.next;
-		hull.appendToHull(pointConsidered);
-		ListNode pointLast = pointConsidered;
-		pointConsidered = pointConsidered.next;
-        LinkedList.printList(hull);
+        LinkedListItr itr = setOfPoints.first();
+        ListNode k;
+        ListNode kPlusOne;
+        ListNode kPlusTwo;
 
+        if (itr.current.next.original == listHead) newListhead = itr.current.next;
 		//Graham scan
-		while (pointConsidered.element != null){
+        // check if we are on last point
+		while (itr.current.next.next.element != null){
+            k = itr.current;
+            kPlusOne = k.next;
+            kPlusTwo = k.next.next;
 
-			// if the last two points in the hull and the point to be considered form convex, 
+
+            if (kPlusTwo.original == listHead) newListhead = kPlusTwo;
+
+			// if the last two points in the hull and the point to be considered form convex,
 			// accept the point and keep scanning
-			if (direction*ccw(pointSecondLast, pointLast, pointConsidered) >= 0){
-				latestAddition = hull.appendToHull(pointConsidered);
-				pointSecondLast = pointLast;
-				pointLast = pointConsidered;
-				pointConsidered = pointConsidered.next;
-                if (pointLast.original == listHead) newListhead = latestAddition;
+            if (ccw(k, kPlusOne, kPlusTwo) <= 0){
+                itr.advance();
 			}
 			// if not remove the last point added
 			else{
-                System.out.println("REMOVING LAST");
-                if (pointSecondLast.previous != hull.header) {
-                    System.out.println(hull);
-                    System.out.println(pointLast);
-                    System.out.println(pointSecondLast);
-                    hull.pop();
-                    pointLast = hull.tail.previous;
-                    pointSecondLast = pointLast.previous;
-                    System.out.println("***");
-                    System.out.println(pointLast);
-                    System.out.println(pointSecondLast);
+                kPlusOne.removeSelf();
+                if (k.previous.element != null) {
+                    itr.goBack();
                 }
-			}
+                else {
+                    itr.advance();
+                }
+
+            }
 
 
         }
-		return hull;
+		return setOfPoints;
 	}
 
 	public static double ccw(ListNode P1, ListNode P2, ListNode P3){
 		//Three points are a counter-clockwise turn if ccw > 0, clockwise if
 		//ccw < 0, and collinear if ccw = 0
 		double product1, product2;
-		product1 = (P2.element[0] - P1.element[0])*(P3.element[1] - P1.element[1]);
+        product1 = (P2.element[0] - P1.element[0])*(P3.element[1] - P1.element[1]);
 		product2 = (P2.element[1] - P1.element[1])*(P3.element[0] - P1.element[0]);
 		return (product1 - product2); 
 	}

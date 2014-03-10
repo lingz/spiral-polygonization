@@ -47,6 +47,16 @@ public class LinkedList
 		return header.next == tail;
 	}
 
+    // check if there are at least this many elements left.
+    public boolean hasLeft(int num) {
+
+        LinkedListItr itr = first();
+        for (int i = 1; i < num; i++) {
+            itr.advance();
+        }
+        return !itr.isPastEnd();
+    }
+
 	/**
 	 * Make the list logically empty.
 	 */
@@ -258,11 +268,13 @@ public class LinkedList
 		LinkedList clone = new LinkedList();
 		LinkedListItr oldList = this.first();
 		ListNode latest = new ListNode(oldList.retrieve(), null, clone.header);
+        latest.original = oldList.current;
 		clone.header.next = latest;
 		LinkedListItr newList = new LinkedListItr(clone.header.next);
-		while (oldList.hasNext()) {
+        while (oldList.hasNext()) {
 			oldList.advance();
 			latest = new ListNode(oldList.retrieve(), null, newList.current);
+            latest.original = oldList.current;
 			newList.current.next = latest;
 			newList.advance();
 		}
@@ -343,7 +355,6 @@ public class LinkedList
         {
             LinkedListItr itr = first( );
             for( ; itr.current.next != null; itr.current = itr.current.next)  {
-
                 string1 = string1.concat(itr.current.toString() + "\n");
 
             }
@@ -358,16 +369,32 @@ public class LinkedList
     }
 
     // iterates through a list and removes all the originals from the list.
-    public void removeOriginals() {
+    public void removeOriginals(int numToKeep) {
+        System.out.println("GOING TO REMOVE ORIGINALS");
+        printDetailed();
+        LinkedListItr forward = first();
+        for (int i=0; i < numToKeep; i++) {
+            forward.advance();
+        }
+
         LinkedListItr itr = first();
-        if (itr.current.element == null) return;
+        if (forward.isPastEnd()) return;
         ListNode current;
         do {
             current = itr.current;
             if (current.element == null) System.out.println("THIS FUNCTION IS WRONG");
             current.deleteOriginal();
             itr.advance();
-        } while (!itr.isPastEnd());
+            forward.advance();
+            System.out.println(itr.current);
+            System.out.println(forward.current);
+        } while (!forward.isPastEnd());
+        System.out.println("FINISHED REMOVING ORIGINALS");
+        System.out.println(forward.current);
+        System.out.println(itr.current);
+    }
+    public void removeOriginals() {
+        removeOriginals(0);
     }
 
     // the number of originals to leave at the end.

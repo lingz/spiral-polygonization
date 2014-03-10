@@ -76,8 +76,22 @@ public class LinkedListTest {
         realLast.setNext(realFirst);
         data.header.setNext(realLast);
         Assert.assertEquals(testData.toString(), data.toString());
+    }
 
+    @Test
+    public void testRemoveOriginals() {
+        LinkedList testingSet = testData.clone();
+        LinkedList newTestData = testingSet.clone();
+        newTestData.removeOriginals(2);
+        String expected = "(0.4214,0.291) (0.2313,0.281) ";
+        Assert.assertEquals(testingSet.toString(), expected);
+    }
 
-
+    @Test
+    public void testHasLeft() {
+        Assert.assertTrue(testData.hasLeft(4));
+        Assert.assertTrue(testData.hasLeft(5));
+        Assert.assertTrue(testData.hasLeft(6));
+        Assert.assertFalse(testData.hasLeft(7));
     }
 }
