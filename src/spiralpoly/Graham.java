@@ -105,13 +105,11 @@ public class Graham {
         k = itr.current;
         kPlusOne = k.next;
         kPlusTwo = kPlusOne.next;
-        int i = 0;
 
 
         while (true) {
-            i++;
-            System.out.println("ON LOOP " + i);
-            if (kPlusTwo.original == listHead) newListhead = kPlusTwo;
+
+            if (k.original == listHead) newListhead = k;
 
 			// if the last two points in the hull and the point to be considered form convex,
 			// accept the point and keep scanning
@@ -127,12 +125,6 @@ public class Graham {
                     itr.goBack();
                     System.out.println("GOING BACK");
                 }
-                else {
-                    System.out.println("GOING FORWARD");
-                    itr.advance();
-                    if (itr.current == originalHead) break;
-                }
-
             }
 
             k = itr.current;
