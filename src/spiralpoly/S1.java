@@ -7,7 +7,7 @@ import hs_convex_hull.PointDistribution;
 import visualize.Polygonization;
 
 public class S1 {
-    private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true, STEP = false;
+    private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true, STEP = false, VERBOSE = false;
     private static int SCALE = 10; // default, easily overwritten
 
 
@@ -24,7 +24,6 @@ public class S1 {
 		LinkedList remaining = HeapSort.sort(input);
 
         LinkedList hull;
-        System.out.println("STARTING LOOP");
 
         while (!remaining.isEmpty()){
             // special first case
@@ -35,7 +34,7 @@ public class S1 {
 
             if (DRAW && DEBUG && STEP) {
                 System.out.println("PREPARING TO GRAHAM");
-                img = new Polygonization(3);
+                img = new Polygonization(5);
                 img.add(remaining, 0, 200, SCALE);
                 System.out.println("Press Enter to Continue");
                 System.in.read();
@@ -63,11 +62,9 @@ public class S1 {
 
             // if remaining has two elements left, prepare for the next loop, otherwise end
             if (remaining.hasLeft(3)) {
-                hull.pop();
                 nextHead = hull.pop().original;
-                System.out.println("REMAINING HAS LEFT");
+                hull.pop();
             } else {
-                System.out.println("REMAINING DOES NOT HAVE LEFT, TERMINATING");
                 while (!remaining.isEmpty())
                     remaining.pop();
 
@@ -78,11 +75,12 @@ public class S1 {
                 System.out.println(hull);
                 System.out.println(remaining);
             }
-            if (DRAW && DEBUG && STEP) {
+            if (DRAW && STEP) {
                 System.out.println("THIS IS AFTER POPPING");
                 System.out.println(hull);
                 img = new Polygonization(3);
 //                img.add(convex, 0, 150, SCALE);
+//                img.add(concave, 0, 150, SCALE);
                 img.add(input, SCALE, true);
                 img.add(hull, 0, 0, SCALE);
 //                img.add(remaining, 0, 200, SCALE);
@@ -97,6 +95,18 @@ public class S1 {
             else
                 concave.newConcatenate(hull);
 
+            if (DRAW && STEP) {
+                System.out.println("THIS IS SUMMARY");
+                System.out.println(hull);
+                img = new Polygonization(3);
+                img.add(convex, 0, 150, SCALE);
+                img.add(concave, 0, 50, SCALE);
+                img.add(input, SCALE, true);
+                System.out.println("Press Enter to Continue");
+                System.in.read();
+            }
+
+
             // flip the direction from clockwise to counter-clockwise or vice versa
             isConvex = !isConvex;
 
@@ -109,7 +119,8 @@ public class S1 {
 
 
 		}
-		System.out.println("final convex");
+        if (VERBOSE)
+		    System.out.println("final convex");
         convex.concatenate(concave.reverse_2());
 		LinkedList.printList(convex);
 
@@ -214,9 +225,14 @@ public class S1 {
         poly.add(data);
         System.in.read();
 
-        System.out.println("STARTING");
-        LinkedList.printList(polygonize(data, 1));
-    	System.out.println("finished");
+        if (VERBOSE)
+            System.out.println("STARTING");
+        final long startTime = System.currentTimeMillis();
+        LinkedList result = polygonize(data, 1);
+        if (VERBOSE)
+            System.out.println(result);
+        System.out.println(System.currentTimeMillis() - startTime);
+        System.out.println("finished");
 	}
 
 }

@@ -90,36 +90,63 @@ public class Graham {
         ListNode kPlusOne;
         ListNode kPlusTwo;
 
-        if (itr.current.next.original == listHead) newListhead = itr.current.next;
+        System.out.println("SPRIALING");
+        System.out.println(setOfPoints);
+
+        // wrap the loop into a circuit
+        ListNode originalHead = setOfPoints.getHead();
+        ListNode originalTail = setOfPoints.getTail();
+        originalTail.setNext(originalHead);
+
+        // if the new head is the second point, set it as thus.
+//        if (itr.current.next.original == listHead) newListhead = itr.current.next;
 		//Graham scan
         // check if we are on last point
-		while (itr.current.next.next.element != null){
-            k = itr.current;
-            kPlusOne = k.next;
-            kPlusTwo = k.next.next;
+        k = itr.current;
+        kPlusOne = k.next;
+        kPlusTwo = kPlusOne.next;
+        int i = 0;
 
 
+        while (true) {
+            i++;
+            System.out.println("ON LOOP " + i);
             if (kPlusTwo.original == listHead) newListhead = kPlusTwo;
 
 			// if the last two points in the hull and the point to be considered form convex,
 			// accept the point and keep scanning
             if (ccw(k, kPlusOne, kPlusTwo) <= 0){
+                System.out.println("POINT ACCEPTED");
                 itr.advance();
-			}
+                if (itr.current == originalHead) break;
+            }
 			// if not remove the last point added
 			else{
                 kPlusOne.removeSelf();
-                if (k.previous.element != null) {
+                if (k != originalHead) {
                     itr.goBack();
+                    System.out.println("GOING BACK");
                 }
                 else {
+                    System.out.println("GOING FORWARD");
                     itr.advance();
+                    if (itr.current == originalHead) break;
                 }
 
             }
 
+            k = itr.current;
+            kPlusOne = k.next;
+            kPlusTwo = k.next.next;
+            System.out.println(k);
+            System.out.println(k == originalHead);
 
         }
+
+        // unwrap the loop
+        setOfPoints.header.setNext(kPlusOne);
+        k.setNext(setOfPoints.tail);
+
 		return setOfPoints;
 	}
 
@@ -127,9 +154,9 @@ public class Graham {
 		//Three points are a counter-clockwise turn if ccw > 0, clockwise if
 		//ccw < 0, and collinear if ccw = 0
 		double product1, product2;
-        product1 = (P2.element[0] - P1.element[0])*(P3.element[1] - P1.element[1]);
-		product2 = (P2.element[1] - P1.element[1])*(P3.element[0] - P1.element[0]);
-		return (product1 - product2); 
+        product1 = (P2.element[0] - P1.element[0])*(P3.element[1] - P2.element[1]);
+		product2 = (P2.element[1] - P1.element[1])*(P3.element[0] - P2.element[0]);
+		return (product1 - product2);
 	}
 
 	public static void main(String[] args){
