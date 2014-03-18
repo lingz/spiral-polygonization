@@ -7,7 +7,7 @@ import hs_convex_hull.PointDistribution;
 import visualize.Polygonization;
 
 public class S1 {
-    private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true, STEP = false, VERBOSE = false;
+    private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = false, STEP = false, VERBOSE = false;
     private static int SCALE = 10; // default, easily overwritten
 
 
@@ -34,7 +34,7 @@ public class S1 {
 
             if (DRAW && DEBUG && STEP) {
                 System.out.println("PREPARING TO GRAHAM");
-                img = new Polygonization(5);
+                img = new Polygonization(0.01f);
                 img.add(remaining, 0, 200, SCALE);
                 System.out.println("Press Enter to Continue");
                 System.in.read();
@@ -46,7 +46,7 @@ public class S1 {
             if (DRAW && DEBUG && STEP) {
                 System.out.println("THIS IS THE HULL");
                 System.out.println(hull);
-                img = new Polygonization(3);
+                img = new Polygonization(0.01f);
 //                img.add(convex, 0, 150, SCALE);
                 img.add(input, SCALE, true);
                 img.add(hull, 0, 0, SCALE);
@@ -78,7 +78,7 @@ public class S1 {
             if (DRAW && STEP) {
                 System.out.println("THIS IS AFTER POPPING");
                 System.out.println(hull);
-                img = new Polygonization(3);
+                img = new Polygonization(0.01f);
 //                img.add(convex, 0, 150, SCALE);
 //                img.add(concave, 0, 150, SCALE);
                 img.add(input, SCALE, true);
@@ -98,7 +98,7 @@ public class S1 {
             if (DRAW && STEP) {
                 System.out.println("THIS IS SUMMARY");
                 System.out.println(hull);
-                img = new Polygonization(3);
+                img = new Polygonization(0.01f);
                 img.add(convex, 0, 150, SCALE);
                 img.add(concave, 0, 50, SCALE);
                 img.add(input, SCALE, true);
@@ -122,13 +122,13 @@ public class S1 {
         if (VERBOSE)
 		    System.out.println("final convex");
         convex.concatenate(concave.reverse_2());
-		LinkedList.printList(convex);
 
 
         if (DRAW) {
             System.out.println("DRAWING");
-            System.out.println(convex);
-            img = new Polygonization(3);
+            if (DEBUG)
+                System.out.println(convex);
+            img = new Polygonization(0.01f, false, new String("Polygonization. Convex and Concave shaded"));
             img.add(convex, 0, SCALE);
         }
         return convex;
@@ -212,21 +212,26 @@ public class S1 {
 //        p.advance();
 
 
-        PointDistribution ps = new PointDistribution(100);
+        PointDistribution ps = new PointDistribution(500000);
         Point[][] seed = ps.uniformPoints;
 
+        long startGenerating = System.currentTimeMillis();
         for (int i = 0; i < seed[0].length; i++) {
             data.insert(new double[] {seed[0][i].coord[0], seed[0][i].coord[1]}, p);
             p.advance();
         }
+        System.out.println("DONE GENERATING");
+        System.out.println(System.currentTimeMillis() - startGenerating);
 
-        System.out.println(data);
-        Polygonization poly = new Polygonization(3);
-        poly.add(data);
-        System.in.read();
+        if (DRAW) {
+            Polygonization poly = new Polygonization(0.01f, false, new String("Polygonization. Convex and Concave shaded"));
+            poly.add(data);
+            System.in.read();
+        }
 
-        if (VERBOSE)
-            System.out.println("STARTING");
+
+
+        System.out.println("STARTING");
         final long startTime = System.currentTimeMillis();
         LinkedList result = polygonize(data, 1);
         if (VERBOSE)

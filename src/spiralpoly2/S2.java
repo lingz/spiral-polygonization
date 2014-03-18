@@ -1,31 +1,26 @@
 package spiralpoly2;
 
-import hs_convex_hull.Chain;
-import hs_convex_hull.ChainIterator;
-import hs_convex_hull.ChainNode;
-import hs_convex_hull.Hull;
-import hs_convex_hull.Point;
-import hs_convex_hull.PointDistribution;
+import hs_convex_hull.*;
+import org.apache.commons.lang3.ArrayUtils;
+import visualize.Polygonization;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import visualize.Polygonization;
-
 public class S2 {
 
-	private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = true;
-	private static final int SIZE = 10000; //num of points
+	private static final boolean DEBUG = false, SHOW_COUNTER = true, DRAW_SEPARATE = false, DRAW = false;
+	private static final int SIZE = 1000000; //num of points
 	private static int COUNTER = 0;
 
 	public static void main(String[] args) {
 		//int size = (int)Math.ceil(Math.random()*10000);
 		//System.out.println();System.out.println("n: "+size);
 		PointDistribution ps = new PointDistribution(SIZE);
+        long start = System.currentTimeMillis();
 		LinkedList<double[]> output = S2.polygonize(ps.uniformPoints);
+        System.out.println(System.currentTimeMillis() - start);
 
 		if (DRAW) {
 			Polygonization img = new Polygonization(1f, SIZE < 30 && DEBUG, new String("Polygonization. Final"));

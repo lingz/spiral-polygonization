@@ -144,8 +144,6 @@ public class LinkedList
 	 */
 	public LinkedListItr findPrevious( double[] x )
 	{
-          System.out.println("FINDING PREVIOUS");
-          System.out.println(x[0] + "," + x[1]);
 /* 1*/	  ListNode itr = header;
 
 /* 2*/	  while( itr.next.element != null && !((itr.next.element[0]==x[0]) && (itr.next.element[1]==x[1])) )
@@ -153,8 +151,6 @@ public class LinkedList
 
         if (itr.next.element == null) System.out.println("EPIC FAILURE");
 
-        System.out.println("FOUND");
-        System.out.println(itr);
 
 /* 4*/	  return new LinkedListItr( itr );
 	}
@@ -166,8 +162,6 @@ public class LinkedList
 	public void remove( double[] x )
 	{
 		LinkedListItr p = findPrevious( x );
-        System.out.println("REMOVING");
-        System.out.println(p.current.next);
 
 		if( p.current.next != null ) {
 			p.current.next = p.current.next.next;  // Bypass deleted node
@@ -370,8 +364,7 @@ public class LinkedList
 
     // iterates through a list and removes all the originals from the list.
     public void removeOriginals(int numToKeep) {
-        System.out.println("GOING TO REMOVE ORIGINALS");
-        printDetailed();
+
         LinkedListItr forward = first();
         for (int i=0; i < numToKeep; i++) {
             forward.advance();
@@ -386,12 +379,7 @@ public class LinkedList
             current.deleteOriginal();
             itr.advance();
             forward.advance();
-            System.out.println(itr.current);
-            System.out.println(forward.current);
         } while (!forward.isPastEnd());
-        System.out.println("FINISHED REMOVING ORIGINALS");
-        System.out.println(forward.current);
-        System.out.println(itr.current);
     }
     public void removeOriginals() {
         removeOriginals(0);

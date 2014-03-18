@@ -59,7 +59,6 @@ public class Graham {
         lower.reverse_2();
         upper.concatenate(lower);
         LinkedList convexHull = findHull(upper);
-        convexHull.printDetailed();
 
 		//Declare convexHull for the output
 //		LinkedList convexHull;
@@ -90,9 +89,6 @@ public class Graham {
         ListNode kPlusOne;
         ListNode kPlusTwo;
 
-        System.out.println("SPRIALING");
-        System.out.println(setOfPoints);
-
         // wrap the loop into a circuit
         ListNode originalHead = setOfPoints.getHead();
         ListNode originalTail = setOfPoints.getTail();
@@ -114,7 +110,6 @@ public class Graham {
 			// if the last two points in the hull and the point to be considered form convex,
 			// accept the point and keep scanning
             if (ccw(k, kPlusOne, kPlusTwo) <= 0){
-                System.out.println("POINT ACCEPTED");
                 itr.advance();
                 if (itr.current == originalHead) break;
             }
@@ -123,15 +118,12 @@ public class Graham {
                 kPlusOne.removeSelf();
                 if (k != originalHead) {
                     itr.goBack();
-                    System.out.println("GOING BACK");
                 }
             }
 
             k = itr.current;
             kPlusOne = k.next;
             kPlusTwo = k.next.next;
-            System.out.println(k);
-            System.out.println(k == originalHead);
 
         }
 
